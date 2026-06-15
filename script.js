@@ -1,4 +1,4 @@
-// --- 点灯パターンのテキストデータ（配列カットバグ対策） ---
+// --- 点灯パターンのテキストデータ（iPhoneシステム制限対応） ---
 const patternStrings = {
     0: "1,1,1,1,1,1,0",
     1: "0,1,1,0,0,0,0",
@@ -24,20 +24,30 @@ let remainingSeconds = 0;
 let isTimerActive = false;
 let timeFormat = '24h'; 
 let lastHour = -1;      
-let wakeLock = null; // ★スリープ防止用オブジェクトの格納先
+let wakeLock = null; 
 
-// Web Audio API を使ったシンセサイザー音源
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// iOS (Safari) 互換の Web Audio API コンテキスト初期化
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContextClass();
 
 function playTone(freq, type, duration) {
+    // iOS Safariでは再生直前にオーディオコンテキストの再開が必要な場合がある
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
+    
     osc.type = type;
     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    
+    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+    
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
+    
     osc.start();
     osc.stop(audioCtx.currentTime + duration);
 }
@@ -162,27 +172,19 @@ function updateDisplay() {
     });
 }
 
-/* --- ★新設：画面のスリープを防止するコアロジック --- */
+// iOS Safari対応の画面スリープ防止機能
 async function requestWakeLock() {
-    // ブラウザがWake Lockに対応しているか確認
     if ('wakeLock' in navigator) {
         try {
             wakeLock = await navigator.wakeLock.request('screen');
-            console.log('画面スリープを防止しました（常時点灯ON）');
-            
-            // タブの切り替えなどでロックが外れたら、戻ってきたときに自動で再取得する設定
-            wakeLock.addEventListener('release', () => {
-                console.log('常時点灯が一旦解除されました');
-            });
+            console.log('Wake Lock Successful');
         } catch (err) {
-            console.error(`常時点灯の設定に失敗しました: ${err.message}`);
+            console.error(`Wake Lock Failed: ${err.message}`);
         }
-    } else {
-        console.warn('お使いのブラウザは画面スリープ防止（Wake Lock API）に対応していません');
     }
 }
 
-// 画面のタブやアプリが切り替わってから「再度戻ってきたとき」に点灯を再開させる
+// バックグラウンドから復帰した際に再取得
 document.addEventListener('visibilitychange', async () => {
     if (wakeLock !== null && document.visibilityState === 'visible') {
         await requestWakeLock();
@@ -204,6 +206,7 @@ function toggleTimerPanel() {
 }
 
 function startTimer() {
+    // iOSでのオーディオ再生許可を有効化
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
@@ -219,85 +222,3 @@ function startTimer() {
 
     isTimerActive = true;
     const dateEl = document.getElementById('date-el');
-    if (dateEl) dateEl.textContent = "⏱️ TIMER MODE";
-    document.getElementById('timer-setup').style.display = 'none';
-    document.getElementById('countdown-display').style.display = 'flex';
-    document.getElementById('timer-status').textContent = "COUNT DOWN...";
-
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        remainingSeconds--;
-        updateDisplay();
-        if (remainingSeconds <= 0) {
-            clearInterval(timerInterval);
-            document.getElementById('timer-status').textContent = "TIME UP !";
-            const alarmToggle = document.getElementById('alarm-toggle');
-            if (alarmToggle && alarmToggle.checked) {
-                triggerAlarm();
-            }
-            setTimeout(() => {
-                stopTimer();
-            }, 4000); 
-        }
-    }, 1000);
-    updateDisplay();
-}
-
-function stopTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-    isTimerActive = false;
-    document.getElementById('timer-setup').style.display = 'flex';
-    document.getElementById('countdown-display').style.display = 'none';
-    clearInterval(timerInterval);
-    timerInterval = setInterval(updateDisplay, 200);
-    updateDisplay();
-}
-
-/* --- UIインタラクション --- */
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const btn = document.getElementById('theme-toggle-btn');
-    if (!btn) return;
-    if (currentTheme === 'light') {
-        document.documentElement.removeAttribute('data-theme');
-        btn.textContent = 'Light Mode';
-        btn.classList.remove('active');
-    } else {
-        document.documentElement.setAttribute('data-theme', 'light');
-        btn.textContent = 'Dark Mode';
-        btn.classList.add('active');
-    }
-}
-
-function changeFormat(format) {
-    timeFormat = format;
-    const btn12 = document.getElementById('btn-12h');
-    const btn24 = document.getElementById('btn-24h');
-    if (btn12) btn12.classList.toggle('active', format === '12h');
-    if (btn24) btn24.classList.toggle('active', format === '24h');
-    updateDisplay();
-}
-
-function changeColor(hexColor) {
-    document.documentElement.style.setProperty('--clock-color', hexColor);
-}
-
-function changeBrightness(val) {
-    document.documentElement.style.setProperty('--clock-opacity', val);
-}
-
-function toggleFullscreen() {
-    document.body.classList.toggle('fullscreen-mode');
-}
-
-// 画面をどこでもいいので「最初にタップ（クリック）した瞬間」に常時点灯ロックを開始
-// （ブラウザのセキュリティ制限上、ユーザーの操作が一度必要です）
-document.addEventListener('click', () => {
-    if (!wakeLock) {
-       requestWakeLock();
-    }
-}, { once: true });
-
-// 初期起動処理
-timerInterval = setInterval(updateDisplay, 200);
-updateDisplay();
