@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark" data-a11y-animated-images="system" data-a11y-link-underlines="true">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高機能 液晶デジタルクロック</title>
+    
+    <!-- GitHub 外部スタイルシート -->
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
+
+    <!-- 外部CSSの読み込み -->
+    <link rel="stylesheet" href="style.css">
+    <script type="application/json" id="client-env">{"locale":"en","featureFlags":[]}</script>
+</head>
+<body>
+
+    <!-- 時計表示エリア -->
+    <div class="clock-container" onclick="toggleFullscreen()">
+        <!-- 要望：カレンダーの文字を大きく調整 -->
+        <div class="date-display" id="date-el">----年--月--日 (ー)</div>
+        
+        <!-- 7セグメント液晶ディスプレイ -->
+        <div class="time-wrapper">
+            <!-- 要望：12時間表示用のAM/PM液晶表示インジケーター -->
+            <div class="period-display" id="period-el">AM</div>
+
+            <!-- 時（10の位 / 1の位） -->
+            <div class="digit" id="h1">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+            <div class="digit" id="h2">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+
+            <!-- コロン1 -->
+            <div class="colon">
+                <div class="colon-dot"></div>
+                <div class="colon-dot"></div>
+            </div>
+
+            <!-- 分（10の位 / 1の位） -->
+            <div class="digit" id="m1">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+            <div class="digit" id="m2">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+
+            <!-- コロン2 -->
+            <div class="colon">
+                <div class="colon-dot"></div>
+                <div class="colon-dot"></div>
+            </div>
+
+            <!-- 秒（10の位 / 1の位） -->
+            <div class="digit digit-sec" id="s1">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+            <div class="digit digit-sec" id="s2">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+        </div>
+
+        <div class="guide-text">画面をタップすると全画面モードを切り替えます</div>
+    </div>
+
+    <!-- タイマー設定・アラーム設定パネル -->
+    <div class="feature-panel" id="timer-panel">
+        <p class="panel-title">CLOCK & TIMER CONTROL</p>
+        
+        <!-- タイマー設定 -->
+        <div class="panel-row" id="timer-setup">
+            <label class="dropdown-label">Timer:</label>
+            <input type="number" id="timer-hours" min="0" max="23" value="0"><span>:</span>
+            <input type="number" id="timer-minutes" min="0" max="59" value="3"><span>:</span>
+            <input type="number" id="timer-seconds" min="0" max="59" value="0">
+            <button class="action-btn" onclick="startTimer()">Start</button>
+        </div>
+        <div class="countdown-row" id="countdown-display">
+            <span class="status-text" id="timer-status">Remaining...</span>
+            <button class="cancel-btn" onclick="stopTimer()">Cancel</button>
+        </div>
+
+        <hr style="width:100%; border:0; border-top:1px solid var(--border-color); margin:5px 0;">
+
+        <!-- 要望：アラーム・時報・時間制のコントロールUI群 -->
+        <div class="panel-row-controls">
+            <!-- 12h / 24h 切り替え -->
+            <div class="control-item">
+                <label class="dropdown-label">Format:</label>
+                <select id="time-format" onchange="changeTimeFormat(this.value)">
+                    <option value="24">24 Hour</option>
+                    <option value="12">12 Hour</option>
+                </select>
+            </div>
+
+            <!-- 時報設定 & 音声選択 -->
+            <div class="control-item">
+                <label class="dropdown-label">Chime:</label>
+                <input type="checkbox" id="chime-toggle">
+                <select id="chime-sound">
+                    <option value="pipip">電子音 (短)</option>
+                    <option value="dingdong">チャイム</option>
+                    <option value="beep">サイン音</option>
+                </select>
+            </div>
+
+            <!-- アラーム設定 -->
+            <div class="control-item">
+                <label class="dropdown-label">Alarm:</label>
+                <input type="checkbox" id="alarm-toggle">
+                <input type="time" id="alarm-time" value="07:00" style="padding:2px 5px; font-size:0.85rem;">
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコントロールバー -->
+    <div class="controls-container">
+        <div class="controls-row">
+            <button id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
+            <button id="timer-toggle-btn" onclick="toggleTimerPanel()">Menu / Timer</button>
+            
+            <div class="color-picker-wrapper">
+                <label>Color:</label>
+                <input type="color" id="color-picker" value="#ff9500" oninput="changeColor(this.value)">
+            </div>
+
+            <div class="brightness-wrapper">
+                <label>Bright:</label>
+                <input type="range" id="brightness" min="0.2" max="1" step="0.1" value="1" oninput="changeBrightness(this.value)">
+            </div>
+        </div>
+    </div>
+
+    <!-- 外部JavaScriptの読み込み -->
+    <script src="script.js"></script>
+</body>
+</html>
