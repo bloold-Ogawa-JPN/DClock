@@ -106,6 +106,7 @@ body {
     position: relative;
     width: 60px;
     height: 110px;
+    display: inline-block; /* 外部CSSによる非表示化を防止 */
 }
 
 /* 秒用の桁は少し小さくする */
@@ -114,17 +115,18 @@ body {
     height: 85px;
     align-self: flex-end; /* 秒は下側に揃える */
     margin-bottom: 5px;
+    display: inline-block;
 }
 
 /* 各セグメント（液晶の棒）の共通設定 */
 .seg {
-    position: absolute;
-    background-color: var(--text-muted); /* 消灯時の色 */
-    border-radius: 4px;
+    position: absolute !important;
+    background-color: var(--text-muted) !important; /* 消灯時の色 */
+    border-radius: 4px !important;
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
-/* ★液晶が点灯（ON）した時の色：カラーピッカーと完全連動 */
+/* ★液晶が点灯（ON）した時の色：最優先でカラーピッカーと完全連動 */
 .seg.on {
     background-color: var(--neon-color) !important;
     box-shadow: 0 0 12px var(--neon-color) !important; /* ネオン風の発光エフェクト */
@@ -132,59 +134,58 @@ body {
 
 /* --- セグメントの位置計算（縦横比を維持した配置） --- */
 /* A（上・横棒） */
-.digit .seg-a { top: 0; left: 6px; right: 6px; height: 8px; }
-.digit-sec .seg-a { height: 6px; left: 5px; right: 5px; }
+.digit .seg-a { top: 0 !important; left: 6px !important; right: 6px !important; height: 8px !important; }
+.digit-sec .seg-a { height: 6px !important; left: 5px !important; right: 5px !important; }
 
 /* B（右上・縦棒） */
-.digit .seg-b { top: 6px; right: 0; bottom: 56px; width: 8px; }
-.digit-sec .seg-b { top: 5px; right: 0; bottom: 43px; width: 6px; }
+.digit .seg-b { top: 6px !important; right: 0 !important; bottom: 56px !important; width: 8px !important; }
+.digit-sec .seg-b { top: 5px !important; right: 0 !important; bottom: 43px !important; width: 6px !important; }
 
 /* C（右下・縦棒） */
-.digit .seg-c { top: 56px; right: 0; bottom: 6px; width: 8px; }
-.digit-sec .seg-c { top: 43px; right: 0; bottom: 5px; width: 6px; }
+.digit .seg-c { top: 56px !important; right: 0 !important; bottom: 6px !important; width: 8px !important; }
+.digit-sec .seg-c { top: 43px !important; right: 0 !important; bottom: 5px !important; width: 6px !important; }
 
 /* D（下・横棒） */
-.digit .seg-d { bottom: 0; left: 6px; right: 6px; height: 8px; }
-.digit-sec .seg-d { height: 6px; left: 5px; right: 5px; }
+.digit .seg-d { bottom: 0 !important; left: 6px !important; right: 6px !important; height: 8px !important; }
+.digit-sec .seg-d { height: 6px !important; left: 5px !important; right: 5px !important; }
 
 /* E（左下・縦棒） */
-.digit .seg-e { top: 56px; left: 0; bottom: 6px; width: 8px; }
-.digit-sec .seg-e { top: 43px; left: 0; bottom: 5px; width: 6px; }
+.digit .seg-e { top: 56px !important; left: 0 !important; bottom: 6px !important; width: 8px !important; }
+.digit-sec .seg-e { top: 43px !important; left: 0 !important; bottom: 5px !important; width: 6px !important; }
 
 /* F（左上・縦棒） */
-.digit .seg-f { top: 6px; left: 0; bottom: 56px; width: 8px; }
-.digit-sec .seg-f { top: 5px; left: 0; bottom: 43px; width: 6px; }
+.digit .seg-f { top: 6px !important; left: 0 !important; bottom: 56px !important; width: 8px !important; }
+.digit-sec .seg-f { top: 5px !important; left: 0 !important; bottom: 43px !important; width: 6px !important; }
 
 /* G（中央・横棒） */
-.digit .seg-g { top: 51px; left: 6px; right: 6px; height: 8px; }
-.digit-sec .seg-g { top: 39px; left: 5px; right: 5px; height: 6px; }
+.digit .seg-g { top: 51px !important; left: 6px !important; right: 6px !important; height: 8px !important; }
+.digit-sec .seg-g { top: 39px !important; left: 5px !important; right: 5px !important; height: 6px !important; }
 
 
 /* --- コロン（：）の描画と色連動 --- */
 .colon {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 20px;
-    width: 20px;
-    height: 110px;
-    align-items: center;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    width: 20px !important;
+    height: 110px !important;
+    align-items: center !important;
 }
 
 .colon-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--text-muted); /* 消灯時の色 */
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background-color: var(--text-muted) !important; /* 消灯時の色 */
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
-/* ★コロンが点灯（ON）した時の色：カラーピッカーと完全連動 */
+/* ★コロンが点灯（ON）した時の色：最優先でカラーピッカーと完全連動 */
 .colon-dot.on {
     background-color: var(--neon-color) !important;
     box-shadow: 0 0 12px var(--neon-color) !important;
 }
-
 
 /* ==========================================================================
    4. タイマー設定・情報パネル
