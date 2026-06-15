@@ -12,6 +12,7 @@
     --clock-opacity: 1;
     --tab-size-preference: 4;
     --fontStack-monospace: "Monaspace Neon", ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important;
+    
     --lcd-off-color: rgba(255, 255, 255, 0.04);
 }
 
@@ -24,34 +25,37 @@
     --btn-active: #c7c7cc;
     --panel-bg: #ffffff;
     --border-color: #e5e5ea;
+    
     --lcd-off-color: rgba(0, 0, 0, 0.03);
 }
 
-pre, code { tab-size: var(--tab-size-preference); }
+pre, code {
+    tab-size: var(--tab-size-preference);
+}
 
 body {
     margin: 0;
-    /* iPhoneのセーフエリア（上下の余白）を自動計算 */
-    padding: padding: calc(10px + env(safe-area-inset-top)) 15px calc(20px + env(safe-area-inset-bottom)) 15px;
+    padding: 0;
     background-color: var(--bg-color);
     color: var(--text-color);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    height: 100vh;
-    box-sizing: border-box;
-    overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none; /* 長押しメニュー禁止 */
+    /* ★【変更】スクロールでアドレスバーを押し出すため、画面高さを少しだけ拡張 */
+    min-height: calc(100vh + 60px);
     transition: background-color 0.3s, color 0.3s;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+body.fullscreen-mode { 
+    justify-content: center; 
+    min-height: 100vh; /* フルスクリーン時はぴったりにする */
+}
+
 .clock-container {
     text-align: center;
-    padding: 10px;
+    padding: 20px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -63,92 +67,83 @@ body {
     transition: opacity 0.1s ease-out;
 }
 
+body.fullscreen-mode .clock-container { 
+    flex-grow: 0; 
+    margin: 0; 
+}
+
 .date-display {
-    font-size: 1.8rem;
-    font-weight: 600;
+    font-size: 2.2rem; 
+    font-weight: 500;
     color: var(--clock-color);
-    letter-spacing: 0.02em;
-    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
     transition: color 0.2s, font-size 0.3s ease-in-out;
 }
 
-/* 液晶ディスプレイ外枠（スマホの幅に合わせて可変） */
+body.fullscreen-mode .date-display { 
+    font-size: 3rem; 
+    margin-bottom: 40px; 
+}
+
+/* --- 液晶デジタル（7セグメント）の図形描画設定 --- */
 .time-wrapper { 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    gap: 1.2vw;
+    gap: 1.5vw;
     transform: skewX(-5deg); 
-    width: 100%;
-    max-width: 500px;
 }
 
-/* AM/PM 液晶 */
-.period-display {
-    font-size: 3vw;
-    font-weight: bold;
-    color: var(--clock-color);
-    margin-right: 1vw;
-    align-self: flex-start;
-    margin-top: 1.5vw;
-}
-
-/* 時・分用の可変サイズ */
 .digit {
     position: relative;
-    width: 11vw;
-    height: 20vw;
-    max-width: 55px;
-    max-height: 100px;
+    width: 9vw;
+    height: 16vw;
+    transition: width 0.3s, height 0.3s;
 }
 
-/* 秒数用の1桁 */
 .digit-sec {
-    width: 6.5vw;
-    height: 11vw;
-    max-width: 32px;
-    max-height: 55px;
-    margin-top: 8vw;
+    width: 5vw;
+    height: 9vw;
+    margin-top: 5.5vw;
 }
 
-/* コロン */
 .colon {
-    width: 4vw;
-    height: 20vw;
+    width: 3vw;
+    height: 16vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5vw;
+    gap: 4vw;
 }
 
 .colon-dot {
-    width: 1.8vw;
-    height: 1.8vw;
-    max-width: 9px;
-    max-height: 9px;
+    width: 1.6vw;
+    height: 1.6vw;
     background-color: var(--lcd-off-color);
-    border-radius: 50%; /* iPhone向けに丸ドットに変更 */
+    border-radius: 0.3vw;
+    transition: background-color 0.05s, box-shadow 0.05s;
 }
 
 .colon-dot.on {
     background-color: var(--clock-color);
-    box-shadow: 0 0 1.5vw var(--clock-color);
+    box-shadow: 0 0 1.2vw var(--clock-color), 0 0 0.4vw var(--clock-color);
 }
 
-/* 7セグメント本体 */
 .seg {
     position: absolute;
     background-color: var(--lcd-off-color);
-    border-radius: 0.5vw;
+    border-radius: 0.4vw;
+    transition: background-color 0.05s ease, box-shadow 0.05s ease;
 }
 
 .seg.on {
     background-color: var(--clock-color);
-    box-shadow: 0 0 1.5vw var(--clock-color);
+    box-shadow: 0 0 1.2vw var(--clock-color), 0 0 0.4vw var(--clock-color);
 }
 
-/* 7セグメント配置パーセント（全画面変形でもズレない設計） */
+/* --- セグメント配置ロジック（％指定） --- */
 .digit .seg-a { top: 0; left: 12%; width: 76%; height: 9.5%; }
 .digit .seg-g { top: 45.25%; left: 12%; width: 76%; height: 9.5%; }
 .digit .seg-d { bottom: 0; left: 12%; width: 76%; height: 9.5%; }
@@ -165,36 +160,44 @@ body {
 .digit-sec .seg-e { bottom: 8%; left: 0; width: 15%; height: 39%; }
 .digit-sec .seg-c { bottom: 8%; right: 0; width: 15%; height: 39%; }
 
-/* 全画面隠しモード（メニュー類を全て非表示） */
-body.fullscreen-mode .controls-container, 
-body.fullscreen-mode .feature-panel { 
-    opacity: 0; 
-    transform: translateY(40px); 
-    pointer-events: none; 
-    position: absolute; 
-}
 body.fullscreen-mode .digit { width: 14vw; height: 25vw; }
-body.fullscreen-mode .digit-sec { width: 8vw; height: 14vw; margin-top: 10vw; }
+body.fullscreen-mode .colon { width: 4vw; height: 25vw; gap: 6vw; }
+body.fullscreen-mode .colon-dot { width: 2.2vw; height: 2.2vw; }
+body.fullscreen-mode .digit-sec { width: 7.5vw; height: 13.5vw; margin-top: 8.5vw; }
 
-.guide-text { font-size: 0.7rem; color: var(--sub-color); margin-top: 20px; opacity: 0.5; }
+.guide-text { font-size: 0.75rem; color: var(--sub-color); margin-top: 30px; opacity: 0.6; transition: opacity 0.3s; }
+body.fullscreen-mode .guide-text { opacity: 0; }
 
-/* コントロールUI（iOSのネイティブUIに合わせた配色） */
-.feature-panel { background-color: var(--panel-bg); border: 1px solid var(--border-color); padding: 12px 20px; border-radius: 14px; margin-bottom: 10px; display: none; flex-direction: column; align-items: center; gap: 8px; width: 90%; max-width: 360px; }
-.panel-title { font-size: 0.75rem; font-weight: 700; color: var(--sub-color); margin: 0; }
-.panel-row { display: flex; gap: 8px; align-items: center; }
-.feature-panel input { background-color: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 6px; border-radius: 8px; font-size: 1rem; text-align: center; width: 55px; }
+/* コントロールUI関係 */
+.feature-panel { 
+    background-color: var(--panel-bg); 
+    border: 1px solid var(--border-color); 
+    padding: 15px 25px; 
+    border-radius: 16px; 
+    margin-bottom: 10px; 
+    display: none; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 10px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+}
+.panel-title { font-size: 0.8rem; font-weight: 700; color: var(--sub-color); margin: 0; letter-spacing: 0.05em; }
+.panel-row { display: flex; gap: 10px; align-items: center; }
+.feature-panel input { background-color: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; border-radius: 8px; font-size: 1rem; text-align: center; }
+#timer-setup input { width: 60px; }
 
-.controls-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px; align-items: center; transition: opacity 0.2s, transform 0.2s; }
-.controls-row { display: flex; gap: 10px; background-color: var(--control-bg); padding: 6px; border-radius: 14px; align-items: center; width: 100%; justify-content: center; box-sizing: border-box; }
-.btn-group { display: flex; background-color: var(--btn-bg); border-radius: 8px; padding: 2px; }
+.status-text { font-size: 0.9rem; font-weight: 600; color: var(--clock-color); }
+.countdown-row { display: none; gap: 15px; align-items: center; }
 
-button { background: none; border: none; color: var(--text-color); padding: 6px 10px; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer; }
-button.active { background-color: var(--btn-active); }
-.action-btn { background-color: var(--clock-color); color: #fff; }
-.cancel-btn { background-color: #ff3b30; color: white; }
+.controls-container { margin-bottom: 30px; display: flex; flex-direction: column; gap: 10px; align-items: center; transition: opacity 0.3s, transform 0.3s; }
+body.fullscreen-mode .controls-container, body.fullscreen-mode .feature-panel { opacity: 0; transform: translateY(20px); pointer-events: none; position: absolute; }
+.controls-row { display: flex; gap: 12px; background-color: var(--control-bg); padding: 5px; border-radius: 12px; align-items: center; }
 
-.dropdown-wrapper { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; }
-.dropdown-label { font-weight: 600; color: var(--text-color); }
-#chime-sound-select { background-color: var(--btn-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.75rem; padding: 2px; }
-.color-picker-wrapper input[type="color"] { border: none; background: none; width: 24px; height: 24px; }
-.brightness-wrapper input[type="range"] { width: 65px; }
+button { background: none; border: none; color: var(--text-color); padding: 6px 12px; font-size: 0.8rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+button.active { background-color: var(--btn-active); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.action-btn { background-color: var(--clock-color); color: #fff; padding: 6px 15px; border-radius: 6px; }
+.cancel-btn { background-color: #ff3b30; color: white; padding: 6px 15px; border-radius: 6px; }
+
+.color-picker-wrapper, .brightness-wrapper { display: flex; align-items: center; font-size: 0.8rem; padding: 0 5px; gap: 5px; }
+.color-picker-wrapper input[type="color"] { border: none; background: none; width: 28px; height: 28px; cursor: pointer; }
+.brightness-wrapper input[type="range"] { width: 70px; cursor: pointer; }
