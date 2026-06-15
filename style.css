@@ -2,25 +2,32 @@
    1. 基本設定・テーマ変数
    ========================================================================== */
 :root {
-    /* JavaScriptのカラーピッカーと連動する変数（未設定時の初期値：オレンジ） */
+    /* JavaScriptのカラーピッカーと連動する変数 */
     --neon-color: #ff9500;
     
     /* ダークテーマ（デフォルト）の配色 */
     --bg-color: #0c0c0c;
     --panel-bg: #1c1c1e;
-    --text-muted: #555555; /* 消灯している液晶のベース色 */
+    
+    /* ★【変更】消灯している液晶のベース色を「#555555」からさらに暗い「#1a1a1a」に変更 */
+    --text-muted: #1a1a1a; 
+    
     --input-bg: #2c2c2e;
     --text-color: #ffffff;
 }
 
-/* ライトテーマ切り替え時の配色（HTMLの data-color-mode="light" と連動） */
+/* ライトテーマ切り替え時の配色 */
 [data-color-mode="light"] {
     --bg-color: #f2f2f7;
     --panel-bg: #ffffff;
-    --text-muted: #e5e5ea; /* 明るい背景での消灯セグメント色 */
+    
+    /* ★【変更】ライトテーマ時も、消灯部分を少しだけ暗く（なじむように）調整 */
+    --text-muted: #dcdce2; 
+    
     --input-bg: #e5e5ea;
     --text-color: #000000;
 }
+
 
 * {
     box-sizing: border-box;
