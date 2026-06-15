@@ -221,7 +221,7 @@ function toggleTimerPanel() {
 }
 
 function startTimer() {
-    initAudio(); // タイマー開始のタップで音源をアクティブ化
+    initAudio(); 
 
     const hInput = parseInt(document.getElementById('timer-hours').value) || 0;
     const mInput = parseInt(document.getElementById('timer-minutes').value) || 0;
@@ -255,8 +255,6 @@ function startTimer() {
     }, 1000);
 }
 
-/* --- ★新設・拡張：設定変更 ＆ localStorage保存ロジック --- */
-
 function stopTimer() {
     if (timerInterval) clearInterval(timerInterval);
     isTimerActive = false;
@@ -264,10 +262,7 @@ function stopTimer() {
     document.getElementById('countdown-display').style.display = 'none';
     updateDisplay();
 }
-
-/* ==========================================================================
-   ★ここから後半部分：設定変更 ＆ localStorage保存・読み込みロジック
-   ========================================================================== */
+/* --- 設定変更 ＆ localStorage保存ロジック --- */
 
 // 時間表記切り替え (12H / 24H)
 function changeFormat(format) {
@@ -296,7 +291,6 @@ function toggleTheme() {
     if (!html || !btn) return;
 
     let currentMode = html.getAttribute('data-color-mode');
-    // lightならdarkへ、それ以外（autoやdark）ならlightへ切り替え
     if (currentMode === 'light') {
         html.setAttribute('data-color-mode', 'dark');
         btn.textContent = 'Light';
@@ -310,24 +304,10 @@ function toggleTheme() {
 
 // 文字色（カラーピッカー）変更
 function changeColor(colorValue) {
-    // 1. CSS変数を書き換え
+    // CSS変数を書き換え（液晶セグメントやコロンの色を制御）
     document.documentElement.style.setProperty('--neon-color', colorValue);
     
-    // 2. 点灯しているセグメントの色をJSで直接すべて書き換える
-    const activeSegs = document.querySelectorAll('.seg.on');
-    activeSegs.forEach(seg => {
-        seg.style.backgroundColor = colorValue;
-    });
-
-    // 3. コロンの色を直接書き換える
-    const activeColons = document.querySelectorAll('.colon-dot');
-    activeColons.forEach(dot => {
-        // オン・オフに関わらず文字色スタイルを仕込んでおく
-        dot.style.color = colorValue;
-        dot.style.backgroundColor = colorValue; 
-    });
-
-    // 4. AMPM・日付の文字色を直接書き換え
+    // AMPM・日付の文字色も明示的に適用
     const periodEl = document.getElementById('period-display');
     if (periodEl) periodEl.style.color = colorValue;
 
@@ -341,7 +321,6 @@ function changeColor(colorValue) {
     localStorage.setItem('clockColor', colorValue);
 }
 
-
 // 明るさ変更
 function changeBrightness(brightnessValue) {
     const clockContainer = document.querySelector('.clock-container');
@@ -354,10 +333,10 @@ function changeBrightness(brightnessValue) {
     localStorage.setItem('clockBrightness', brightnessValue);
 }
 
-// 画面をタップした際のフルスクロール/常時点灯開始、コントロール非表示などのトリガー
+// 画面をタップした際の挙動
 function toggleFullscreen() {
-    initAudio(); // 最初の画面タップでオーディオを確実に有効化
-    requestWakeLock(); // スリープ防止機能をスタート
+    initAudio(); 
+    requestWakeLock(); 
     
     // ボトムメニューの表示切り替え
     const controls = document.querySelector('.controls-container');
@@ -370,19 +349,18 @@ function toggleFullscreen() {
     }
 }
 
-/* --- ★次回起動時の自動読み込み（初期化） --- */
+/* --- 次回起動時の自動読み込み（初期化） --- */
 window.addEventListener('DOMContentLoaded', () => {
-    // 1. 時間表示形式 (12h / 24h) の復元
+    // 1. 時間表示形式 (12h / 24h)
     const savedFormat = localStorage.getItem('clockFormat') || '24h';
     changeFormat(savedFormat);
 
-    // 2. 時報トグルボタンの復元
+    // 2. 時報トグルボタン・サウンドセレクトの復元
     const savedChimeToggle = localStorage.getItem('chimeToggle');
     const chimeToggleEl = document.getElementById('chime-toggle');
     if (savedChimeToggle !== null && chimeToggleEl) {
         chimeToggleEl.checked = savedChimeToggle === 'true';
     }
-    // 時報サウンドセレクトの復元
     const savedChimeSound = localStorage.getItem('chimeSound') || 'electronic';
     const chimeSoundEl = document.getElementById('chime-sound-select');
     if (chimeSoundEl) chimeSoundEl.value = savedChimeSound;
@@ -411,7 +389,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedBrightness = localStorage.getItem('clockBrightness') || '1';
     changeBrightness(savedBrightness);
 
-    // チェックボックスやセレクトボックスの変更を監視して即時保存するイベントリスナー
+    // 変更を監視して即時保存するイベントリスナー
     if (chimeToggleEl) {
         chimeToggleEl.addEventListener('change', (e) => {
             localStorage.setItem('chimeToggle', e.target.checked);
@@ -432,4 +410,3 @@ window.addEventListener('DOMContentLoaded', () => {
     updateDisplay();
     setInterval(updateDisplay, 1000);
 });
-
