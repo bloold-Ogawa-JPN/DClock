@@ -310,8 +310,29 @@ function toggleTheme() {
 
 // 文字色（カラーピッカー）変更
 function changeColor(colorValue) {
-    // 液晶ON状態のセグメントカラーをCSS変数経由で一括変更
+    // 1. CSS変数を書き換え
     document.documentElement.style.setProperty('--neon-color', colorValue);
+    
+    // 2. 点灯しているセグメントの色をJSで直接すべて書き換える
+    const activeSegs = document.querySelectorAll('.seg.on');
+    activeSegs.forEach(seg => {
+        seg.style.backgroundColor = colorValue;
+    });
+
+    // 3. コロンの色を直接書き換える
+    const activeColons = document.querySelectorAll('.colon-dot');
+    activeColons.forEach(dot => {
+        // オン・オフに関わらず文字色スタイルを仕込んでおく
+        dot.style.color = colorValue;
+        dot.style.backgroundColor = colorValue; 
+    });
+
+    // 4. AMPM・日付の文字色を直接書き換え
+    const periodEl = document.getElementById('period-display');
+    if (periodEl) periodEl.style.color = colorValue;
+
+    const dateEl = document.getElementById('date-el');
+    if (dateEl) dateEl.style.color = colorValue;
     
     // カラーピッカー自体の表示位置も同期
     const picker = document.getElementById('color-picker');
@@ -319,6 +340,7 @@ function changeColor(colorValue) {
     
     localStorage.setItem('clockColor', colorValue);
 }
+
 
 // 明るさ変更
 function changeBrightness(brightnessValue) {
