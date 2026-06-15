@@ -94,6 +94,15 @@ body.fullscreen-mode .date-display {
     gap: 1.5vw;
     transform: skewX(-5deg); 
 }
+/* AMPM表示の配置とカラー連動の設定 */
+.period-display {
+    /* 位置を時間表示の上端に揃える */
+    align-self: flex-start;
+    margin-top: 4px; /* 必要に応じて数字を微調整して、時間のセグメント上端と綺麗に揃えてください */
+
+    /* カラーピッカーの色（JavaScriptで設定したCSS変数）を文字色に反映 */
+    color: var(--neon-color, #ff9500);
+}
 
 .digit {
     position: relative;
