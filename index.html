@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark">
+<html lang="ja" data-color-mode="dark" data-light-theme="light" data-dark-theme="dark">
 <head>
     <meta charset="utf-8">
     <!-- iPhoneアプリ化のためのアイコン設定 -->
@@ -151,16 +151,13 @@
 
     <!-- 外部JavaScriptの読み込み -->
     <script src="script.js"></script>
-    <!-- ★【新設】アドレスバー自動スクロール押し出し処理 -->
+    <!-- アドレスバー自動スクロール押し出し処理 -->
     <script>
         function hideAddressBar() {
-            // ページロードから少し遅らせて（100ミリ秒後）下へ1ピクセルスクロールする
             setTimeout(function() {
                 window.scrollTo(0, 1);
             }, 100);
         }
-
-        // ページ読み込み完了時、および画面の縦横が切り替わったときに実行
         window.addEventListener("load", hideAddressBar);
         window.addEventListener("orientationchange", hideAddressBar);
     </script>
