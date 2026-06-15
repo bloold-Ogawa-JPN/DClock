@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="ja" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark" data-a11y-animated-images="system" data-a11y-link-underlines="true">
+<html lang="ja" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark">
 <head>
     <meta charset="utf-8">
-    <!-- iPhone用のビューポート固定 ＆ ホーム画面追加時のスタンドアロン起動設定 -->
+    <!-- iPhoneアプリ化のための必須設定 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>LCD Clock for iPhone</title>
+    <meta name="apple-mobile-web-app-title" content="液晶時計">
+    <title>液晶デジタル時計 - iPhone App版</title>
     
     <!-- GitHub 外部スタイルシート（Primer UI） -->
     <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
@@ -27,10 +28,10 @@
 
     <!-- 時計表示エリア -->
     <div class="clock-container" onclick="toggleFullscreen()">
-        <!-- カレンダー表示（大きく・見やすく） -->
+        <!-- カレンダー表示 -->
         <div class="date-display" id="date-el">----年--月--日 (ー)</div>
         
-        <!-- 7セグメント物理液晶ディスプレイ構造 -->
+        <!-- 7セグメントディスプレイ -->
         <div class="time-wrapper">
             <!-- AM/PM 液晶 -->
             <div class="period-display" id="period-display">AM</div>
@@ -84,7 +85,7 @@
             </div>
         </div>
 
-        <div class="guide-text">タップ：フルスクリーン切り替え / 1回タップで常時点灯ON</div>
+        <div class="guide-text">画面タップ：メニューの表示切替 / 初回タップで常時点灯が開始します</div>
     </div>
 
     <!-- タイマー設定・情報パネル -->
