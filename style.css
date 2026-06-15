@@ -109,67 +109,69 @@ body {
 /* ==========================================================================
    3. 7セグメント液晶ディスプレイ（デジタル数字）の描画
    ========================================================================== */
+/* 画面の横幅（vw）をベースに全体のサイズを自動計算 */
 .digit {
     position: relative;
-    width: 60px;
-    height: 110px;
-    display: inline-block; /* 外部CSSによる非表示化を防止 */
+    width: 7.5vw;     /* 横幅を画面幅の7.5%に固定 */
+    height: 13.75vw;  /* 高さを画面幅の13.75%に固定 */
+    max-width: 60px;   /* パソコンなどの大画面で大きくなりすぎない制限 */
+    max-height: 110px;
+    display: inline-block;
 }
 
 /* 秒用の桁は少し小さくする */
 .digit-sec {
-    width: 45px;
-    height: 85px;
+    width: 5.6vw;
+    height: 10.6vw;
+    max-width: 45px;
+    max-height: 85px;
     align-self: flex-end; /* 秒は下側に揃える */
-    margin-bottom: 5px;
+    margin-bottom: 0.6vw;
     display: inline-block;
 }
 
 /* 各セグメント（液晶の棒）の共通設定 */
 .seg {
     position: absolute !important;
-    
-    /* ★変数を使うのをやめ、最優先（!important）で直接真っ暗なグレーに固定します */
-    background-color: #0c0c0c !important; 
-    
-    border-radius: 4px !important;
+    background-color: #111111 !important; /* 消灯時は直接暗い色に固定 */
+    border-radius: 0.5vw !important;
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
-/* ★液晶が点灯（ON）した時の色：最優先でカラーピッカーと完全連動 */
+/* ★液晶が点灯（ON）した時の色 */
 .seg.on {
     background-color: var(--neon-color) !important;
-    box-shadow: 0 0 12px var(--neon-color) !important; /* ネオン風の発光エフェクト */
+    box-shadow: 0 0 1.5vw var(--neon-color) !important; /* 発光エフェクトも画面幅に比例 */
 }
 
-/* --- セグメントの位置計算（縦横比を維持した配置） --- */
+/* --- セグメントの位置計算（画面幅に合わせて自動伸縮） --- */
 /* A（上・横棒） */
-.digit .seg-a { top: 0 !important; left: 6px !important; right: 6px !important; height: 8px !important; }
-.digit-sec .seg-a { height: 6px !important; left: 5px !important; right: 5px !important; }
+.digit .seg-a { top: 0 !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
+.digit-sec .seg-a { height: 0.75vw !important; left: 0.6vw !important; right: 0.6vw !important; }
 
 /* B（右上・縦棒） */
-.digit .seg-b { top: 6px !important; right: 0 !important; bottom: 56px !important; width: 8px !important; }
-.digit-sec .seg-b { top: 5px !important; right: 0 !important; bottom: 43px !important; width: 6px !important; }
+.digit .seg-b { top: 0.75vw !important; right: 0 !important; bottom: 7vw !important; width: 1vw !important; }
+.digit-sec .seg-b { top: 0.6vw !important; right: 0 !important; bottom: 5.4vw !important; width: 0.75vw !important; }
 
 /* C（右下・縦棒） */
-.digit .seg-c { top: 56px !important; right: 0 !important; bottom: 6px !important; width: 8px !important; }
-.digit-sec .seg-c { top: 43px !important; right: 0 !important; bottom: 5px !important; width: 6px !important; }
+.digit .seg-c { top: 7vw !important; right: 0 !important; bottom: 0.75vw !important; width: 1vw !important; }
+.digit-sec .seg-c { top: 5.4vw !important; right: 0 !important; bottom: 0.6vw !important; width: 0.75vw !important; }
 
 /* D（下・横棒） */
-.digit .seg-d { bottom: 0 !important; left: 6px !important; right: 6px !important; height: 8px !important; }
-.digit-sec .seg-d { height: 6px !important; left: 5px !important; right: 5px !important; }
+.digit .seg-d { bottom: 0 !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
+.digit-sec .seg-d { height: 0.75vw !important; left: 0.6vw !important; right: 0.6vw !important; }
 
 /* E（左下・縦棒） */
-.digit .seg-e { top: 56px !important; left: 0 !important; bottom: 6px !important; width: 8px !important; }
-.digit-sec .seg-e { top: 43px !important; left: 0 !important; bottom: 5px !important; width: 6px !important; }
+.digit .seg-e { top: 7vw !important; left: 0 !important; bottom: 0.75vw !important; width: 1vw !important; }
+.digit-sec .seg-e { top: 5.4vw !important; left: 0 !important; bottom: 0.6vw !important; width: 0.75vw !important; }
 
 /* F（左上・縦棒） */
-.digit .seg-f { top: 6px !important; left: 0 !important; bottom: 56px !important; width: 8px !important; }
-.digit-sec .seg-f { top: 5px !important; left: 0 !important; bottom: 43px !important; width: 6px !important; }
+.digit .seg-f { top: 0.75vw !important; left: 0 !important; bottom: 7vw !important; width: 1vw !important; }
+.digit-sec .seg-f { top: 0.6vw !important; right: 0 !important; bottom: 5.4vw !important; width: 0.75vw !important; }
 
 /* G（中央・横棒） */
-.digit .seg-g { top: 51px !important; left: 6px !important; right: 6px !important; height: 8px !important; }
-.digit-sec .seg-g { top: 39px !important; left: 5px !important; right: 5px !important; height: 6px !important; }
+.digit .seg-g { top: 6.4vw !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
+.digit-sec .seg-g { top: 4.9vw !important; left: 0.6vw !important; right: 0.6vw !important; height: 0.75vw !important; }
 
 
 /* --- コロン（：）の描画と色連動 --- */
@@ -177,28 +179,26 @@ body {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    gap: 20px !important;
-    width: 20px !important;
-    height: 110px !important;
+    gap: 2.5vw !important;
+    width: 2.5vw !important;
+    height: 13.75vw !important;
     align-items: center !important;
 }
 
 .colon-dot {
-    width: 8px !important;
-    height: 8px !important;
+    width: 1vw !important;
+    height: 1vw !important;
     border-radius: 50% !important;
-    
-    /* ★コロンの消灯時も、最優先で直接真っ暗なグレーに固定します */
-    background-color: #111111 !important; 
-    
+    background-color: #111111 !important; /* 消灯時は直接暗い色に固定 */
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
-/* ★コロンが点灯（ON）した時の色：最優先でカラーピッカーと完全連動 */
+/* ★コロンが点灯（ON）した時の色 */
 .colon-dot.on {
     background-color: var(--neon-color) !important;
-    box-shadow: 0 0 12px var(--neon-color) !important;
+    box-shadow: 0 0 1.5vw var(--neon-color) !important;
 }
+
 
 /* ==========================================================================
    4. タイマー設定・情報パネル
