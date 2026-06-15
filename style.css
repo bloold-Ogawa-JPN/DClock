@@ -1,215 +1,352 @@
-/* --- カラーテーマ定義 --- */
+/* ==========================================================================
+   1. 基本設定・テーマ変数
+   ========================================================================== */
 :root {
-    --bg-color: #000000;
-    --text-color: #ffffff;
-    --sub-color: #8e8e93;
-    --control-bg: #1c1c1e;
-    --btn-bg: #2c2c2e;
-    --btn-active: #636366;
+    /* JavaScriptのカラーピッカーと連動する変数（未設定時の初期値：オレンジ） */
+    --neon-color: #ff9500;
+    
+    /* ダークテーマ（デフォルト）の配色 */
+    --bg-color: #0c0c0c;
     --panel-bg: #1c1c1e;
-    --border-color: #38383a;
-    --clock-color: #ff9500;
-    --clock-opacity: 1;
-    --tab-size-preference: 4;
-    --fontStack-monospace: "Monaspace Neon", ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important;
-    
-    --lcd-off-color: rgba(255, 255, 255, 0.04);
+    --text-muted: #555555; /* 消灯している液晶のベース色 */
+    --input-bg: #2c2c2e;
+    --text-color: #ffffff;
 }
 
-[data-theme="light"] {
+/* ライトテーマ切り替え時の配色（HTMLの data-color-mode="light" と連動） */
+[data-color-mode="light"] {
     --bg-color: #f2f2f7;
-    --text-color: #000000;
-    --sub-color: #8e8e93;
-    --control-bg: #e5e5ea;
-    --btn-bg: #ffffff;
-    --btn-active: #c7c7cc;
     --panel-bg: #ffffff;
-    --border-color: #e5e5ea;
-    
-    --lcd-off-color: rgba(0, 0, 0, 0.03);
+    --text-muted: #e5e5ea; /* 明るい背景での消灯セグメント色 */
+    --input-bg: #e5e5ea;
+    --text-color: #000000;
 }
 
-pre, code {
-    tab-size: var(--tab-size-preference);
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 body {
-    margin: 0;
-    padding: 0;
     background-color: var(--bg-color);
     color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    /* ★【変更】スクロールでアドレスバーを押し出すため、画面高さを少しだけ拡張 */
-    min-height: calc(100vh + 60px);
-    transition: background-color 0.3s, color 0.3s;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-body.fullscreen-mode { 
-    justify-content: center; 
-    min-height: 100vh; /* フルスクリーン時はぴったりにする */
-}
-
-.clock-container {
-    text-align: center;
     padding: 20px;
-    flex-grow: 1;
+    overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ==========================================================================
+   2. 時計表示エリア（レイアウト）
+   ========================================================================== */
+.clock-container {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
-    box-sizing: border-box;
-    opacity: var(--clock-opacity);
-    transition: opacity 0.1s ease-out;
+    max-width: 800px;
+    cursor: pointer;
+    transition: opacity 0.2s; /* 明るさ調整用 */
 }
 
-body.fullscreen-mode .clock-container { 
-    flex-grow: 0; 
-    margin: 0; 
-}
-
-/* 3. 日付の文字色を設定 */
+/* 日付表示 */
 .date-display {
-    color: var(--neon-color, #ff9500) !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    color: var(--neon-color) !important; /* カラーピッカーと連動 */
+    transition: color 0.2s;
 }
 
-body.fullscreen-mode .date-display { 
-    font-size: 3rem; 
-    margin-bottom: 40px; 
+/* 液晶全体を囲むラッパー */
+.time-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    padding: 20px 10px;
 }
 
-/* --- 液晶デジタル（7セグメント）の図形描画設定 --- */
-.time-wrapper { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 1.5vw;
-    transform: skewX(-5deg); 
-}
-/* AMPM表示の配置とカラー連動の設定 */
+/* ★AMPM表示：位置を時間表示の上端に揃え、色を連動 */
 .period-display {
-    /* 位置を時間表示の上端に揃える */
-    align-self: flex-start;
-    margin-top: 4px; /* 必要に応じて数字を微調整して、時間のセグメント上端と綺麗に揃えてください */
-
-    /* カラーピッカーの色（JavaScriptで設定したCSS変数）を文字色に反映 */
-    color: var(--neon-color, #ff9500);
+    font-size: 1.2rem;
+    font-weight: bold;
+    align-self: flex-start; /* 上端揃えに設定 */
+    margin-top: 6px;       /* 7セグメントの上端と綺麗に重なるよう微調整 */
+    margin-right: 5px;
+    color: var(--neon-color) !important; /* カラーピッカーと連動 */
+    font-family: monospace;
+    transition: color 0.2s;
 }
 
+/* ガイドテキスト */
+.guide-text {
+    font-size: 0.85rem;
+    color: #8e8e93;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* ==========================================================================
+   3. 7セグメント液晶ディスプレイ（デジタル数字）の描画
+   ========================================================================== */
 .digit {
     position: relative;
-    width: 9vw;
-    height: 16vw;
-    transition: width 0.3s, height 0.3s;
+    width: 60px;
+    height: 110px;
 }
 
+/* 秒用の桁は少し小さくする */
 .digit-sec {
-    width: 5vw;
-    height: 9vw;
-    margin-top: 5.5vw;
+    width: 45px;
+    height: 85px;
+    align-self: flex-end; /* 秒は下側に揃える */
+    margin-bottom: 5px;
 }
 
+/* 各セグメント（液晶の棒）の共通設定 */
+.seg {
+    position: absolute;
+    background-color: var(--text-muted); /* 消灯時の色 */
+    border-radius: 4px;
+    transition: background-color 0.1s, box-shadow 0.1s;
+}
+
+/* ★液晶が点灯（ON）した時の色：カラーピッカーと完全連動 */
+.seg.on {
+    background-color: var(--neon-color) !important;
+    box-shadow: 0 0 12px var(--neon-color) !important; /* ネオン風の発光エフェクト */
+}
+
+/* --- セグメントの位置計算（縦横比を維持した配置） --- */
+/* A（上・横棒） */
+.digit .seg-a { top: 0; left: 6px; right: 6px; height: 8px; }
+.digit-sec .seg-a { height: 6px; left: 5px; right: 5px; }
+
+/* B（右上・縦棒） */
+.digit .seg-b { top: 6px; right: 0; bottom: 56px; width: 8px; }
+.digit-sec .seg-b { top: 5px; right: 0; bottom: 43px; width: 6px; }
+
+/* C（右下・縦棒） */
+.digit .seg-c { top: 56px; right: 0; bottom: 6px; width: 8px; }
+.digit-sec .seg-c { top: 43px; right: 0; bottom: 5px; width: 6px; }
+
+/* D（下・横棒） */
+.digit .seg-d { bottom: 0; left: 6px; right: 6px; height: 8px; }
+.digit-sec .seg-d { height: 6px; left: 5px; right: 5px; }
+
+/* E（左下・縦棒） */
+.digit .seg-e { top: 56px; left: 0; bottom: 6px; width: 8px; }
+.digit-sec .seg-e { top: 43px; left: 0; bottom: 5px; width: 6px; }
+
+/* F（左上・縦棒） */
+.digit .seg-f { top: 6px; left: 0; bottom: 56px; width: 8px; }
+.digit-sec .seg-f { top: 5px; left: 0; bottom: 43px; width: 6px; }
+
+/* G（中央・横棒） */
+.digit .seg-g { top: 51px; left: 6px; right: 6px; height: 8px; }
+.digit-sec .seg-g { top: 39px; left: 5px; right: 5px; height: 6px; }
+
+
+/* --- コロン（：）の描画と色連動 --- */
 .colon {
-    width: 3vw;
-    height: 16vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 20px;
+    width: 20px;
+    height: 110px;
     align-items: center;
-    gap: 4vw;
 }
 
 .colon-dot {
-    width: 1.6vw;
-    height: 1.6vw;
-    background-color: var(--lcd-off-color);
-    border-radius: 0.3vw;
-    transition: background-color 0.05s, box-shadow 0.05s;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-muted); /* 消灯時の色 */
+    transition: background-color 0.1s, box-shadow 0.1s;
 }
 
+/* ★コロンが点灯（ON）した時の色：カラーピッカーと完全連動 */
 .colon-dot.on {
-    /* 丸い点を背景色で塗っている場合 */
-    background-color: var(--neon-color, #ff9500) !important;
-    
-    /* 丸い点を文字として表示している場合 */
-    color: var(--neon-color, #ff9500) !important;
+    background-color: var(--neon-color) !important;
+    box-shadow: 0 0 12px var(--neon-color) !important;
 }
 
-.seg {
-    position: absolute;
-    background-color: var(--lcd-off-color);
-    border-radius: 0.4vw;
-    transition: background-color 0.05s ease, box-shadow 0.05s ease;
+
+/* ==========================================================================
+   4. タイマー設定・情報パネル
+   ========================================================================== */
+.feature-panel {
+    display: none; /* 初期状態は非表示、JavaScriptでflexに切り替え */
+    flex-direction: column;
+    background-color: var(--panel-bg);
+    border-radius: 12px;
+    padding: 15px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* 1. 点灯しているセグメント（液晶の棒）の色を設定 */
-.seg.on {
-    /* 固定の色（#ff9500など）から、以下の変数指定に書き換えます */
-    background-color: var(--neon-color, #ff9500) !important;
-
-    /* もし光るエフェクト（影）をつけている場合は、影の色も連動させます */
-    box-shadow: 0 0 10px var(--neon-color, #ff9500) !important; 
+.panel-title {
+    font-size: 0.75rem;
+    color: #8e8e93;
+    font-weight: bold;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
 }
 
-/* --- セグメント配置ロジック（％指定） --- */
-.digit .seg-a { top: 0; left: 12%; width: 76%; height: 9.5%; }
-.digit .seg-g { top: 45.25%; left: 12%; width: 76%; height: 9.5%; }
-.digit .seg-d { bottom: 0; left: 12%; width: 76%; height: 9.5%; }
-.digit .seg-f { top: 7%; left: 0; width: 12%; height: 41.5%; }
-.digit .seg-b { top: 7%; right: 0; width: 12%; height: 41.5%; }
-.digit .seg-e { bottom: 7%; left: 0; width: 12%; height: 41.5%; }
-.digit .seg-c { bottom: 7%; right: 0; width: 12%; height: 41.5%; }
-
-.digit-sec .seg-a { top: 0; left: 14%; width: 72%; height: 11%; }
-.digit-sec .seg-g { top: 44.5%; left: 14%; width: 72%; height: 11%; }
-.digit-sec .seg-d { bottom: 0; left: 14%; width: 72%; height: 11%; }
-.digit-sec .seg-f { top: 8%; left: 0; width: 15%; height: 39%; }
-.digit-sec .seg-b { top: 8%; right: 0; width: 15%; height: 39%; }
-.digit-sec .seg-e { bottom: 8%; left: 0; width: 15%; height: 39%; }
-.digit-sec .seg-c { bottom: 8%; right: 0; width: 15%; height: 39%; }
-
-body.fullscreen-mode .digit { width: 14vw; height: 25vw; }
-body.fullscreen-mode .colon { width: 4vw; height: 25vw; gap: 6vw; }
-body.fullscreen-mode .colon-dot { width: 2.2vw; height: 2.2vw; }
-body.fullscreen-mode .digit-sec { width: 7.5vw; height: 13.5vw; margin-top: 8.5vw; }
-
-.guide-text { font-size: 0.75rem; color: var(--sub-color); margin-top: 30px; opacity: 0.6; transition: opacity 0.3s; }
-body.fullscreen-mode .guide-text { opacity: 0; }
-
-/* コントロールUI関係 */
-.feature-panel { 
-    background-color: var(--panel-bg); 
-    border: 1px solid var(--border-color); 
-    padding: 15px 25px; 
-    border-radius: 16px; 
-    margin-bottom: 10px; 
-    display: none; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 10px; 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+.panel-row, .countdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
-.panel-title { font-size: 0.8rem; font-weight: 700; color: var(--sub-color); margin: 0; letter-spacing: 0.05em; }
-.panel-row { display: flex; gap: 10px; align-items: center; }
-.feature-panel input { background-color: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; border-radius: 8px; font-size: 1rem; text-align: center; }
-#timer-setup input { width: 60px; }
 
-.status-text { font-size: 0.9rem; font-weight: 600; color: var(--clock-color); }
-.countdown-row { display: none; gap: 15px; align-items: center; }
+.countdown-row {
+    display: none; /* カウントダウン中のみJSで表示 */
+}
 
-.controls-container { margin-bottom: 30px; display: flex; flex-direction: column; gap: 10px; align-items: center; transition: opacity 0.3s, transform 0.3s; }
-body.fullscreen-mode .controls-container, body.fullscreen-mode .feature-panel { opacity: 0; transform: translateY(20px); pointer-events: none; position: absolute; }
-.controls-row { display: flex; gap: 12px; background-color: var(--control-bg); padding: 5px; border-radius: 12px; align-items: center; }
+.feature-panel input[type="number"] {
+    width: 60px;
+    background-color: var(--input-bg);
+    border: none;
+    color: var(--text-color);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    text-align: center;
+}
 
-button { background: none; border: none; color: var(--text-color); padding: 6px 12px; font-size: 0.8rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-button.active { background-color: var(--btn-active); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.action-btn { background-color: var(--clock-color); color: #fff; padding: 6px 15px; border-radius: 6px; }
-.cancel-btn { background-color: #ff3b30; color: white; padding: 6px 15px; border-radius: 6px; }
+/* ==========================================================================
+   5. iPhone最適化コントロールメニュー（画面下部）
+   ========================================================================== */
+.controls-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: var(--panel-bg);
+    width: 100%;
+    max-width: 500px;
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
 
-.color-picker-wrapper, .brightness-wrapper { display: flex; align-items: center; font-size: 0.8rem; padding: 0 5px; gap: 5px; }
-.color-picker-wrapper input[type="color"] { border: none; background: none; width: 28px; height: 28px; cursor: pointer; }
-.brightness-wrapper input[type="range"] { width: 70px; cursor: pointer; }
+.controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* 汎用ボタンスタイル */
+button {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.1s;
+}
+
+button:active {
+    opacity: 0.7;
+}
+
+/* 選択中（アクティブ）のボタン */
+button.active {
+    background-color: #007aff;
+    color: #ffffff;
+}
+
+/* ボタンのグループ化 (12H/24H用) */
+.btn-group {
+    display: flex;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.btn-group button {
+    background-color: transparent;
+    padding: 8px 14px;
+    border-radius: 6px;
+}
+
+.btn-group button.active {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ドロップダウン、インプットのラッパー設定 */
+.dropdown-wrapper, .color-picker-wrapper, .brightness-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--input-bg);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.dropdown-label {
+    font-weight: 600;
+}
+
+select {
+    background-color: transparent;
+    color: var(--text-color);
+    border: none;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+}
+
+/* カラーピッカーの装飾 */
+input[type="color"] {
+    -webkit-appearance: none;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+}
+
+/* 明るさスライダーの装飾 */
+input[type="range"] {
+    width: 70px;
+    cursor: pointer;
+}
+
+/* ユーティリティクラス */
+.flex-wrap { flex-wrap: wrap; }
+.justify-center { justify-content: center; }
+.gap-2 { gap: 8px; }
