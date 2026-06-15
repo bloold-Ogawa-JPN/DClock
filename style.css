@@ -130,7 +130,7 @@ body {
     position: absolute !important;
     
     /* ★変数を使うのをやめ、最優先（!important）で直接真っ暗なグレーに固定します */
-    background-color: #111111 !important; 
+    background-color: #0c0c0c !important; 
     
     border-radius: 4px !important;
     transition: background-color 0.1s, box-shadow 0.1s;
