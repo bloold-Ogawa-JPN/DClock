@@ -2,10 +2,14 @@
 <html lang="ja" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark" data-a11y-animated-images="system" data-a11y-link-underlines="true">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高機能 液晶デジタルクロック</title>
+    <!-- iPhone用のビューポート固定 ＆ ホーム画面追加時のスタンドアロン起動設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>LCD Clock for iPhone</title>
     
-    <!-- GitHub 外部スタイルシート -->
+    <!-- GitHub 外部スタイルシート（Primer UI） -->
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
     <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
     <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
     <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
@@ -15,21 +19,23 @@
 
     <!-- 外部CSSの読み込み -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- 環境変数JSON -->
     <script type="application/json" id="client-env">{"locale":"en","featureFlags":[]}</script>
 </head>
 <body>
 
     <!-- 時計表示エリア -->
     <div class="clock-container" onclick="toggleFullscreen()">
-        <!-- 要望：カレンダーの文字を大きく調整 -->
+        <!-- カレンダー表示（大きく・見やすく） -->
         <div class="date-display" id="date-el">----年--月--日 (ー)</div>
         
-        <!-- 7セグメント液晶ディスプレイ -->
+        <!-- 7セグメント物理液晶ディスプレイ構造 -->
         <div class="time-wrapper">
-            <!-- 要望：12時間表示用のAM/PM液晶表示インジケーター -->
-            <div class="period-display" id="period-el">AM</div>
+            <!-- AM/PM 液晶 -->
+            <div class="period-display" id="period-display">AM</div>
 
-            <!-- 時（10の位 / 1の位） -->
+            <!-- 時 -->
             <div class="digit" id="h1">
                 <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
                 <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
@@ -47,7 +53,7 @@
                 <div class="colon-dot"></div>
             </div>
 
-            <!-- 分（10の位 / 1の位） -->
+            <!-- 分 -->
             <div class="digit" id="m1">
                 <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
                 <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
@@ -65,7 +71,7 @@
                 <div class="colon-dot"></div>
             </div>
 
-            <!-- 秒（10の位 / 1の位） -->
+            <!-- 秒 -->
             <div class="digit digit-sec" id="s1">
                 <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
                 <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
@@ -78,72 +84,63 @@
             </div>
         </div>
 
-        <div class="guide-text">画面をタップすると全画面モードを切り替えます</div>
+        <div class="guide-text">タップ：フルスクリーン切り替え / 1回タップで常時点灯ON</div>
     </div>
 
-    <!-- タイマー設定・アラーム設定パネル -->
+    <!-- タイマー設定・情報パネル -->
     <div class="feature-panel" id="timer-panel">
-        <p class="panel-title">CLOCK & TIMER CONTROL</p>
+        <p class="panel-title">TIMER CONTROL</p>
         
-        <!-- タイマー設定 -->
         <div class="panel-row" id="timer-setup">
-            <label class="dropdown-label">Timer:</label>
-            <input type="number" id="timer-hours" min="0" max="23" value="0"><span>:</span>
-            <input type="number" id="timer-minutes" min="0" max="59" value="3"><span>:</span>
-            <input type="number" id="timer-seconds" min="0" max="59" value="0">
+            <input type="number" id="timer-hours" min="0" max="23" value="0" placeholder="時"><span>:</span>
+            <input type="number" id="timer-minutes" min="0" max="59" value="3" placeholder="分"><span>:</span>
+            <input type="number" id="timer-seconds" min="0" max="59" value="0" placeholder="秒">
             <button class="action-btn" onclick="startTimer()">Start</button>
         </div>
+
         <div class="countdown-row" id="countdown-display">
             <span class="status-text" id="timer-status">Remaining...</span>
             <button class="cancel-btn" onclick="stopTimer()">Cancel</button>
         </div>
-
-        <hr style="width:100%; border:0; border-top:1px solid var(--border-color); margin:5px 0;">
-
-        <!-- 要望：アラーム・時報・時間制のコントロールUI群 -->
-        <div class="panel-row-controls">
-            <!-- 12h / 24h 切り替え -->
-            <div class="control-item">
-                <label class="dropdown-label">Format:</label>
-                <select id="time-format" onchange="changeTimeFormat(this.value)">
-                    <option value="24">24 Hour</option>
-                    <option value="12">12 Hour</option>
-                </select>
-            </div>
-
-            <!-- 時報設定 & 音声選択 -->
-            <div class="control-item">
-                <label class="dropdown-label">Chime:</label>
-                <input type="checkbox" id="chime-toggle">
-                <select id="chime-sound">
-                    <option value="pipip">電子音 (短)</option>
-                    <option value="dingdong">チャイム</option>
-                    <option value="beep">サイン音</option>
-                </select>
-            </div>
-
-            <!-- アラーム設定 -->
-            <div class="control-item">
-                <label class="dropdown-label">Alarm:</label>
-                <input type="checkbox" id="alarm-toggle">
-                <input type="time" id="alarm-time" value="07:00" style="padding:2px 5px; font-size:0.85rem;">
-            </div>
-        </div>
     </div>
 
-    <!-- メインコントロールバー -->
+    <!-- iPhone最適化ボトムコントロールメニュー -->
     <div class="controls-container">
-        <div class="controls-row">
-            <button id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
-            <button id="timer-toggle-btn" onclick="toggleTimerPanel()">Menu / Timer</button>
+        <!-- 上段 -->
+        <div class="controls-row flex-wrap justify-center gap-2">
+            <div class="btn-group">
+                <button id="btn-12h" onclick="changeFormat('12h')">12H</button>
+                <button id="btn-24h" class="active" onclick="changeFormat('24h')">24H</button>
+            </div>
+            
+            <div class="dropdown-wrapper">
+                <input type="checkbox" id="chime-toggle" checked>
+                <label for="chime-toggle" class="dropdown-label">時報</label>
+                <select id="chime-sound-select">
+                    <option value="electronic">電子音</option>
+                    <option value="bell">鐘の音</option>
+                    <option value="pipipip">レトロ</option>
+                </select>
+            </div>
+
+            <div class="dropdown-wrapper">
+                <input type="checkbox" id="alarm-toggle" checked>
+                <label for="alarm-toggle" class="dropdown-label">タイマー音</label>
+            </div>
+        </div>
+
+        <!-- 下段 -->
+        <div class="controls-row flex-wrap justify-center gap-2">
+            <button id="theme-toggle-btn" onclick="toggleTheme()">Light</button>
+            <button id="timer-toggle-btn" onclick="toggleTimerPanel()">Timer</button>
             
             <div class="color-picker-wrapper">
-                <label>Color:</label>
+                <label class="dropdown-label">Color:</label>
                 <input type="color" id="color-picker" value="#ff9500" oninput="changeColor(this.value)">
             </div>
 
             <div class="brightness-wrapper">
-                <label>Bright:</label>
+                <label class="dropdown-label">Bright:</label>
                 <input type="range" id="brightness" min="0.2" max="1" step="0.1" value="1" oninput="changeBrightness(this.value)">
             </div>
         </div>
