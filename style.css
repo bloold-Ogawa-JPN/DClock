@@ -128,7 +128,10 @@ body {
 /* 各セグメント（液晶の棒）の共通設定 */
 .seg {
     position: absolute !important;
-    background-color: var(--text-muted) !important; /* 消灯時の色 */
+    
+    /* ★変数を使うのをやめ、最優先（!important）で直接真っ暗なグレーに固定します */
+    background-color: #111111 !important; 
+    
     border-radius: 4px !important;
     transition: background-color 0.1s, box-shadow 0.1s;
 }
@@ -184,7 +187,10 @@ body {
     width: 8px !important;
     height: 8px !important;
     border-radius: 50% !important;
-    background-color: var(--text-muted) !important; /* 消灯時の色 */
+    
+    /* ★コロンの消灯時も、最優先で直接真っ暗なグレーに固定します */
+    background-color: #111111 !important; 
+    
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
