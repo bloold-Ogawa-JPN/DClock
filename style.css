@@ -10,9 +10,10 @@
     --border-color: #38383a;
     --clock-color: #ff9500;
     --clock-opacity: 1;
+    --tab-size-preference: 4;
+    --fontStack-monospace: "Monaspace Neon", ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important;
     
     --lcd-off-color: rgba(255, 255, 255, 0.04);
-    --lcd-text-off: rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="light"] {
@@ -26,12 +27,17 @@
     --border-color: #e5e5ea;
     
     --lcd-off-color: rgba(0, 0, 0, 0.03);
-    --lcd-text-off: rgba(0, 0, 0, 0.06);
 }
 
+pre, code {
+    tab-size: var(--tab-size-preference);
+}
+
+/* --- iPhone対応基本レイアウト --- */
 body {
     margin: 0;
-    padding: 0;
+    /* iPhoneのノッチ・セーフエリアを考慮したパディング設定 */
+    padding: env(safe-area-inset-top, 20px) 0 env(safe-area-inset-bottom, 20px) 0;
     background-color: var(--bg-color);
     color: var(--text-color);
     display: flex;
@@ -39,18 +45,24 @@ body {
     justify-content: space-between;
     align-items: center;
     height: 100vh;
+    box-sizing: border-box;
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
     transition: background-color 0.3s, color 0.3s;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    /* iOSのスクロールバウンス（跳ね返り）を抑制 */
+    position: fixed;
+    width: 100%;
 }
 
-body.fullscreen-mode { justify-content: center; }
+body.fullscreen-mode { 
+    justify-content: center; 
+}
 
 .clock-container {
     text-align: center;
-    padding: 20px;
+    padding: 10px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -62,60 +74,65 @@ body.fullscreen-mode { justify-content: center; }
     transition: opacity 0.1s ease-out;
 }
 
-body.fullscreen-mode .clock-container { flex-grow: 0; margin: 0; }
+body.fullscreen-mode .clock-container { 
+    flex-grow: 0; 
+    margin: 0; 
+}
 
-/* 要望：カレンダーの文字サイズを2倍近く大きく調整 */
 .date-display {
-    font-size: 2.2rem; 
+    font-size: 1.8rem; /* iPhone画面向けに視認性を最大化 */
     font-weight: 600;
     color: var(--clock-color);
-    letter-spacing: 0.05em;
-    margin-bottom: 28px;
+    letter-spacing: 0.02em;
+    margin-bottom: 20px;
     transition: color 0.2s, font-size 0.3s ease-in-out;
 }
 
-body.fullscreen-mode .date-display { font-size: 3.4rem; margin-bottom: 45px; }
+body.fullscreen-mode .date-display { 
+    font-size: 2.4rem; 
+    margin-bottom: 30px; 
+}
 
-/* --- 液晶デジタル図形レイアウト --- */
+/* --- 液晶デジタル（7セグメント）図形設定（％比率でiPhoneの縦横変化に対応） --- */
 .time-wrapper { 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    gap: 1.5vw;
+    gap: 1.2vw;
     transform: skewX(-5deg); 
 }
 
-/* 要望：AM/PM 液晶インジケーター用のスタイル */
+/* AM/PM 液晶インジケーター */
 .period-display {
-    font-size: 2.5vw;
+    font-size: 2.2vw;
     font-weight: 800;
-    color: var(--lcd-text-off);
-    margin-right: 1.5vw;
-    align-self: flex-start;
-    margin-top: 1vw;
-    transition: color 0.1s;
-}
-.period-display.on {
     color: var(--clock-color);
-    text-shadow: 0 0 1vw var(--clock-color);
+    margin-right: 1vw;
+    align-self: flex-start;
+    margin-top: 1.5vw;
+    display: none;
+    opacity: 0.8;
+}
+body.fullscreen-mode .period-display {
+    font-size: 3.5vw;
 }
 
 .digit {
     position: relative;
-    width: 9vw;
-    height: 16vw;
+    width: 10vw; /* 画面幅に対して美しく収まるサイズに変更 */
+    height: 18vw;
     transition: width 0.3s, height 0.3s;
 }
 
 .digit-sec {
-    width: 5vw;
-    height: 9vw;
-    margin-top: 5.5vw;
+    width: 5.5vw;
+    height: 10vw;
+    margin-top: 6.5vw;
 }
 
 .colon {
-    width: 3vw;
-    height: 16vw;
+    width: 3.5vw;
+    height: 18vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -124,10 +141,10 @@ body.fullscreen-mode .date-display { font-size: 3.4rem; margin-bottom: 45px; }
 }
 
 .colon-dot {
-    width: 1.6vw;
-    height: 1.6vw;
+    width: 1.8vw;
+    height: 1.8vw;
     background-color: var(--lcd-off-color);
-    border-radius: 0.3vw;
+    border-radius: 0.4vw;
     transition: background-color 0.05s, box-shadow 0.05s;
 }
 
@@ -148,7 +165,7 @@ body.fullscreen-mode .date-display { font-size: 3.4rem; margin-bottom: 45px; }
     box-shadow: 0 0 1.2vw var(--clock-color), 0 0 0.4vw var(--clock-color);
 }
 
-/* セグメント配置（物理レイアウト） */
+/* --- セグメント配置（時・分） --- */
 .digit .seg-a { top: 0; left: 12%; width: 76%; height: 9.5%; }
 .digit .seg-g { top: 45.25%; left: 12%; width: 76%; height: 9.5%; }
 .digit .seg-d { bottom: 0; left: 12%; width: 76%; height: 9.5%; }
@@ -157,6 +174,7 @@ body.fullscreen-mode .date-display { font-size: 3.4rem; margin-bottom: 45px; }
 .digit .seg-e { bottom: 7%; left: 0; width: 12%; height: 41.5%; }
 .digit .seg-c { bottom: 7%; right: 0; width: 12%; height: 41.5%; }
 
+/* --- セグメント配置（秒） --- */
 .digit-sec .seg-a { top: 0; left: 14%; width: 72%; height: 11%; }
 .digit-sec .seg-g { top: 44.5%; left: 14%; width: 72%; height: 11%; }
 .digit-sec .seg-d { bottom: 0; left: 14%; width: 72%; height: 11%; }
@@ -165,56 +183,73 @@ body.fullscreen-mode .date-display { font-size: 3.4rem; margin-bottom: 45px; }
 .digit-sec .seg-e { bottom: 8%; left: 0; width: 15%; height: 39%; }
 .digit-sec .seg-c { bottom: 8%; right: 0; width: 15%; height: 39%; }
 
-body.fullscreen-mode .digit { width: 14vw; height: 25vw; }
-body.fullscreen-mode .colon { width: 4vw; height: 25vw; gap: 6vw; }
+/* --- 全画面（横向き／全画面モード共通対応） --- */
+body.fullscreen-mode .digit { width: 13vw; height: 23vw; }
+body.fullscreen-mode .colon { width: 4vw; height: 23vw; gap: 5vw; }
 body.fullscreen-mode .colon-dot { width: 2.2vw; height: 2.2vw; }
-body.fullscreen-mode .digit-sec { width: 7.5vw; height: 13.5vw; margin-top: 8.5vw; }
-body.fullscreen-mode .period-display { font-size: 3.8vw; }
+body.fullscreen-mode .digit-sec { width: 7vw; height: 12.5vw; margin-top: 8vw; }
 
-.guide-text { font-size: 0.75rem; color: var(--sub-color); margin-top: 30px; opacity: 0.6; transition: opacity 0.3s; }
+.guide-text { font-size: 0.75rem; color: var(--sub-color); margin-top: 15px; opacity: 0.5; transition: opacity 0.3s; text-align: center; }
 body.fullscreen-mode .guide-text { opacity: 0; }
 
-/* コントロールUIおよび追加オプション用CSS */
+/* コントロールUI（iPhone用タッチエリア拡大） */
 .feature-panel { 
     background-color: var(--panel-bg); 
     border: 1px solid var(--border-color); 
     padding: 15px 20px; 
-    border-radius: 16px; 
+    border-radius: 14px; 
     margin-bottom: 10px; 
     display: none; 
     flex-direction: column; 
     align-items: center; 
-    gap: 12px; 
+    gap: 10px; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+    width: 90%;
+    max-width: 400px;
 }
 .panel-title { font-size: 0.75rem; font-weight: 700; color: var(--sub-color); margin: 0; letter-spacing: 0.05em; }
 .panel-row { display: flex; gap: 8px; align-items: center; }
-.panel-row-controls { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; width: 100%; }
-.control-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
-
-.feature-panel input, .feature-panel select { 
-    background-color: var(--btn-bg); 
-    border: 1px solid var(--border-color); 
-    color: var(--text-color); 
-    padding: 5px 8px; 
-    border-radius: 6px; 
-    font-size: 0.85rem; 
-    outline: none;
-}
-#timer-setup input { width: 50px; text-align: center; }
+.feature-panel input { background-color: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 10px; border-radius: 8px; font-size: 1rem; text-align: center; }
+#timer-setup input { width: 55px; }
 
 .status-text { font-size: 0.9rem; font-weight: 600; color: var(--clock-color); }
 .countdown-row { display: none; gap: 15px; align-items: center; }
 
-.controls-container { margin-bottom: 30px; display: flex; flex-direction: column; gap: 10px; align-items: center; transition: opacity 0.3s, transform 0.3s; }
+.controls-container { 
+    margin-bottom: env(safe-area-inset-bottom, 15px); 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    align-items: center; 
+    transition: opacity 0.3s, transform 0.3s; 
+    width: 100%;
+}
 body.fullscreen-mode .controls-container, body.fullscreen-mode .feature-panel { opacity: 0; transform: translateY(20px); pointer-events: none; position: absolute; }
-.controls-row { display: flex; gap: 12px; background-color: var(--control-bg); padding: 5px; border-radius: 12px; align-items: center; }
+.controls-row { display: flex; gap: 10px; background-color: var(--control-bg); padding: 6px; border-radius: 12px; align-items: center; }
 
-button { background: none; border: none; color: var(--text-color); padding: 6px 12px; font-size: 0.8rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+/* iOS標準のクリック300ms遅延を解除 */
+button, select, input[type="checkbox"] {
+    touch-action: manipulation;
+}
+
+button { background: none; border: none; color: var(--text-color); padding: 8px 14px; font-size: 0.8rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
 button.active { background-color: var(--btn-active); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.action-btn { background-color: var(--clock-color); color: #fff; padding: 5px 12px; border-radius: 6px; }
-.cancel-btn { background-color: #ff3b30; color: white; padding: 5px 12px; border-radius: 6px; }
+.action-btn { background-color: var(--clock-color); color: #fff; padding: 8px 16px; border-radius: 8px; }
+.cancel-btn { background-color: #ff3b30; color: white; padding: 8px 16px; border-radius: 8px; }
 
-.color-picker-wrapper, .brightness-wrapper { display: flex; align-items: center; font-size: 0.8rem; padding: 0 5px; gap: 5px; }
-.color-picker-wrapper input[type="color"] { border: none; background: none; width: 28px; height: 28px; cursor: pointer; }
-.brightness-wrapper input[type="range"] { width: 70px; cursor: pointer; }
+.dropdown-wrapper { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+.dropdown-label { font-size: 0.75rem; font-weight: 600; color: var(--text-color); }
+#chime-sound-select {
+    background-color: var(--btn-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    outline: none;
+    -webkit-appearance: none; /* iOSの野暮ったいデフォルト矢印を消去 */
+}
+
+.color-picker-wrapper, .brightness-wrapper { display: flex; align-items: center; font-size: 0.75rem; gap: 4px; }
+.color-picker-wrapper input[type="color"] { border: none; background: none; width: 30px; height: 30px; cursor: pointer; }
+.brightness-wrapper input[type="range"] { width: 65px; cursor: pointer; }
