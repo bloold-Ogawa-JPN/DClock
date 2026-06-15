@@ -1,4 +1,4 @@
-// --- 点灯パターンのテキストデータ（iPhoneシステム制限対応） ---
+// --- 点灯パターンのテキストデータ（iOS環境での配列カットバグ対策） ---
 const patternStrings = {
     0: "1,1,1,1,1,1,0",
     1: "0,1,1,0,0,0,0",
@@ -26,22 +26,30 @@ let timeFormat = '24h';
 let lastHour = -1;      
 let wakeLock = null; 
 
-// iOS (Safari) 互換の Web Audio API コンテキスト初期化
-const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContextClass();
+// --- iOS対応 Web Audio API シンセサイザー音源 ---
+// iOSではユーザー操作（タップなど）の直後でないとオーディオ再生が許可されないため、初期状態はnullにします
+let audioCtx = null;
 
-function playTone(freq, type, duration) {
-    // iOS Safariでは再生直前にオーディオコンテキストの再開が必要な場合がある
-    if (audioCtx.state === 'suspended') {
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
-    
+}
+
+function playTone(freq, type, duration) {
+    initAudio();
+    if (!audioCtx) return;
+
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
     
     osc.type = type;
     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
     
+    // iOSアプリで爆音にならないよう音量を0.2に最適化
     gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
     
@@ -52,6 +60,7 @@ function playTone(freq, type, duration) {
     osc.stop(audioCtx.currentTime + duration);
 }
 
+// 時報音
 function triggerChime() {
     const chimeSelect = document.getElementById('chime-sound-select').value;
     if (chimeSelect === 'electronic') {
@@ -69,6 +78,7 @@ function triggerChime() {
     }
 }
 
+// アラーム音（タイマー終了時）
 function triggerAlarm() {
     let count = 0;
     const alarmLoop = setInterval(() => {
@@ -79,6 +89,7 @@ function triggerAlarm() {
     }, 600);
 }
 
+// 7セグメント液晶の描画ロジック
 function drawDigit(element, num) {
     if (!element) return;
     const segs = element.querySelectorAll('.seg');
@@ -92,6 +103,7 @@ function drawDigit(element, num) {
     });
 }
 
+// 液晶表示の更新処理
 function updateDisplay() {
     let hoursStr, minutesStr, secondsStr;
     const periodEl = document.getElementById('period-display');
@@ -127,6 +139,7 @@ function updateDisplay() {
         const rawMinute = now.getMinutes();
         const rawSecond = now.getSeconds();
 
+        // 毎時0分0秒の時報判定
         if (rawMinute === 0 && rawSecond === 0 && rawHour !== lastHour) {
             const chimeToggle = document.getElementById('chime-toggle');
             if (chimeToggle && chimeToggle.checked) {
@@ -135,6 +148,7 @@ function updateDisplay() {
             lastHour = rawHour;
         }
 
+        // 12時間表記 / 24時間表記の出し分け
         if (timeFormat === '12h' && periodEl) {
             periodEl.style.display = 'block';
             if (rawHour >= 12) {
@@ -153,6 +167,7 @@ function updateDisplay() {
         secondsStr = String(rawSecond).padStart(2, '0');
     }
 
+    // 各桁へデータを分配して液晶点灯
     drawDigit(document.getElementById('h1'), parseInt(hoursStr.charAt(0)));
     drawDigit(document.getElementById('h2'), parseInt(hoursStr.charAt(1)));
     drawDigit(document.getElementById('m1'), parseInt(minutesStr.charAt(0)));
@@ -160,6 +175,7 @@ function updateDisplay() {
     drawDigit(document.getElementById('s1'), parseInt(secondsStr.charAt(0)));
     drawDigit(document.getElementById('s2'), parseInt(secondsStr.charAt(1)));
 
+    // コロンの点滅同期
     const blinkTarget = isTimerActive ? remainingSeconds : parseInt(secondsStr);
     const isEven = blinkTarget % 2 === 0;
     const colons = document.querySelectorAll('.colon-dot');
@@ -172,26 +188,26 @@ function updateDisplay() {
     });
 }
 
-// iOS Safari対応の画面スリープ防止機能
+// --- iOS対応：常時点灯（スリープ防止）処理 ---
 async function requestWakeLock() {
     if ('wakeLock' in navigator) {
         try {
             wakeLock = await navigator.wakeLock.request('screen');
-            console.log('Wake Lock Successful');
+            console.log('常時点灯モードが有効になりました');
         } catch (err) {
-            console.error(`Wake Lock Failed: ${err.message}`);
+            console.error(`常時点灯エラー: ${err.message}`);
         }
     }
 }
 
-// バックグラウンドから復帰した際に再取得
+// バックグラウンド（別アプリ）から復帰した際に常時点灯を再取得
 document.addEventListener('visibilitychange', async () => {
     if (wakeLock !== null && document.visibilityState === 'visible') {
         await requestWakeLock();
     }
 });
 
-/* --- タイマー制御 --- */
+/* --- タイマー制御パネル --- */
 function toggleTimerPanel() {
     const panel = document.getElementById('timer-panel');
     const btn = document.getElementById('timer-toggle-btn');
@@ -206,10 +222,8 @@ function toggleTimerPanel() {
 }
 
 function startTimer() {
-    // iOSでのオーディオ再生許可を有効化
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
+    initAudio(); // タイマー開始のタップで音源をアクティブ化
+
     const hInput = parseInt(document.getElementById('timer-hours').value) || 0;
     const mInput = parseInt(document.getElementById('timer-minutes').value) || 0;
     const sInput = parseInt(document.getElementById('timer-seconds').value) || 0;
@@ -222,3 +236,86 @@ function startTimer() {
 
     isTimerActive = true;
     const dateEl = document.getElementById('date-el');
+    if (dateEl) dateEl.textContent = "⏱️ TIMER MODE";
+    document.getElementById('timer-setup').style.display = 'none';
+    document.getElementById('countdown-display').style.display = 'flex';
+    document.getElementById('timer-status').textContent = "COUNT DOWN...";
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        remainingSeconds--;
+        updateDisplay();
+        if (remainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('timer-status').textContent = "TIME UP !";
+            const alarmToggle = document.getElementById('alarm-toggle');
+            if (alarmToggle && alarmToggle.checked) {
+                triggerAlarm();
+            }
+            setTimeout(() => {
+                stopTimer();
+            }, 4000); 
+        }
+    }, 1000);
+    updateDisplay();
+}
+
+function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    isTimerActive = false;
+    document.getElementById('timer-setup').style.display = 'flex';
+    document.getElementById('countdown-display').style.display = 'none';
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateDisplay, 200);
+    updateDisplay();
+}
+
+/* --- 各種UI切り替え --- */
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const btn = document.getElementById('theme-toggle-btn');
+    if (!btn) return;
+    if (currentTheme === 'light') {
+        document.documentElement.removeAttribute('data-theme');
+        btn.textContent = 'Light';
+        btn.classList.remove('active');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        btn.textContent = 'Dark';
+        btn.classList.add('active');
+    }
+}
+
+function changeFormat(format) {
+    timeFormat = format;
+    const btn12 = document.getElementById('btn-12h');
+    const btn24 = document.getElementById('btn-24h');
+    if (btn12) btn12.classList.toggle('active', format === '12h');
+    if (btn24) btn24.classList.toggle('active', format === '24h');
+    updateDisplay();
+}
+
+function changeColor(hexColor) {
+    document.documentElement.style.setProperty('--clock-color', hexColor);
+}
+
+function changeBrightness(val) {
+    document.documentElement.style.setProperty('--clock-opacity', val);
+}
+
+function toggleFullscreen() {
+    document.body.classList.toggle('fullscreen-mode');
+}
+
+// --- iOSセキュリティ制限解除（ファーストタッチ連動） ---
+// アプリ起動後に画面を1回でもタップすると、オーディオシステムと常時点灯が同時にロックオンされます
+document.addEventListener('click', () => {
+   initAudio();           // 音源制限を解除
+   if (!wakeLock) {
+      requestWakeLock();  // スリープ防止を有効化
+   }
+}, { once: true });
+
+// ループ処理開始
+timerInterval = setInterval(updateDisplay, 200);
+updateDisplay();
