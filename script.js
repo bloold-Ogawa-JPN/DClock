@@ -27,7 +27,6 @@ let lastHour = -1;
 let wakeLock = null; 
 
 // --- iOS対応 Web Audio API シンセサイザー音源 ---
-// iOSではユーザー操作（タップなど）の直後でないとオーディオ再生が許可されないため、初期状態はnullにします
 let audioCtx = null;
 
 function initAudio() {
@@ -252,70 +251,163 @@ function startTimer() {
             if (alarmToggle && alarmToggle.checked) {
                 triggerAlarm();
             }
-            setTimeout(() => {
-                stopTimer();
-            }, 4000); 
         }
     }, 1000);
-    updateDisplay();
 }
+
+/* --- ★新設・拡張：設定変更 ＆ localStorage保存ロジック --- */
 
 function stopTimer() {
     if (timerInterval) clearInterval(timerInterval);
     isTimerActive = false;
     document.getElementById('timer-setup').style.display = 'flex';
     document.getElementById('countdown-display').style.display = 'none';
-    clearInterval(timerInterval);
-    timerInterval = setInterval(updateDisplay, 200);
     updateDisplay();
 }
 
-/* --- 各種UI切り替え --- */
+/* ==========================================================================
+   ★ここから後半部分：設定変更 ＆ localStorage保存・読み込みロジック
+   ========================================================================== */
+
+// 時間表記切り替え (12H / 24H)
+function changeFormat(format) {
+    timeFormat = format;
+    localStorage.setItem('clockFormat', format);
+    
+    // ボタンのハイライト切り替え
+    const btn12 = document.getElementById('btn-12h');
+    const btn24 = document.getElementById('btn-24h');
+    if (btn12 && btn24) {
+        if (format === '12h') {
+            btn12.classList.add('active');
+            btn24.classList.remove('active');
+        } else {
+            btn12.classList.remove('active');
+            btn24.classList.add('active');
+        }
+    }
+    updateDisplay();
+}
+
+// テーマ切り替え (Light / Dark)
 function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const html = document.documentElement;
     const btn = document.getElementById('theme-toggle-btn');
-    if (!btn) return;
-    if (currentTheme === 'light') {
-        document.documentElement.removeAttribute('data-theme');
+    if (!html || !btn) return;
+
+    let currentMode = html.getAttribute('data-color-mode');
+    // lightならdarkへ、それ以外（autoやdark）ならlightへ切り替え
+    if (currentMode === 'light') {
+        html.setAttribute('data-color-mode', 'dark');
         btn.textContent = 'Light';
-        btn.classList.remove('active');
+        localStorage.setItem('clockTheme', 'dark');
     } else {
-        document.documentElement.setAttribute('data-theme', 'light');
+        html.setAttribute('data-color-mode', 'light');
         btn.textContent = 'Dark';
-        btn.classList.add('active');
+        localStorage.setItem('clockTheme', 'light');
     }
 }
 
-function changeFormat(format) {
-    timeFormat = format;
-    const btn12 = document.getElementById('btn-12h');
-    const btn24 = document.getElementById('btn-24h');
-    if (btn12) btn12.classList.toggle('active', format === '12h');
-    if (btn24) btn24.classList.toggle('active', format === '24h');
-    updateDisplay();
+// 文字色（カラーピッカー）変更
+function changeColor(colorValue) {
+    // 液晶ON状態のセグメントカラーをCSS変数経由で一括変更
+    document.documentElement.style.setProperty('--neon-color', colorValue);
+    
+    // カラーピッカー自体の表示位置も同期
+    const picker = document.getElementById('color-picker');
+    if (picker) picker.value = colorValue;
+    
+    localStorage.setItem('clockColor', colorValue);
 }
 
-function changeColor(hexColor) {
-    document.documentElement.style.setProperty('--clock-color', hexColor);
+// 明るさ変更
+function changeBrightness(brightnessValue) {
+    const clockContainer = document.querySelector('.clock-container');
+    if (clockContainer) {
+        clockContainer.style.opacity = brightnessValue;
+    }
+    const slider = document.getElementById('brightness');
+    if (slider) slider.value = brightnessValue;
+
+    localStorage.setItem('clockBrightness', brightnessValue);
 }
 
-function changeBrightness(val) {
-    document.documentElement.style.setProperty('--clock-opacity', val);
-}
-
+// 画面をタップした際のフルスクロール/常時点灯開始、コントロール非表示などのトリガー
 function toggleFullscreen() {
-    document.body.classList.toggle('fullscreen-mode');
+    initAudio(); // 最初の画面タップでオーディオを確実に有効化
+    requestWakeLock(); // スリープ防止機能をスタート
+    
+    // ボトムメニューの表示切り替え
+    const controls = document.querySelector('.controls-container');
+    if (controls) {
+        if (controls.style.display === 'none') {
+            controls.style.display = 'flex';
+        } else {
+            controls.style.display = 'none';
+        }
+    }
 }
 
-// --- iOSセキュリティ制限解除（ファーストタッチ連動） ---
-// アプリ起動後に画面を1回でもタップすると、オーディオシステムと常時点灯が同時にロックオンされます
-document.addEventListener('click', () => {
-   initAudio();           // 音源制限を解除
-   if (!wakeLock) {
-      requestWakeLock();  // スリープ防止を有効化
-   }
-}, { once: true });
+/* --- ★次回起動時の自動読み込み（初期化） --- */
+window.addEventListener('DOMContentLoaded', () => {
+    // 1. 時間表示形式 (12h / 24h) の復元
+    const savedFormat = localStorage.getItem('clockFormat') || '24h';
+    changeFormat(savedFormat);
 
-// ループ処理開始
-timerInterval = setInterval(updateDisplay, 200);
-updateDisplay();
+    // 2. 時報トグルボタンの復元
+    const savedChimeToggle = localStorage.getItem('chimeToggle');
+    const chimeToggleEl = document.getElementById('chime-toggle');
+    if (savedChimeToggle !== null && chimeToggleEl) {
+        chimeToggleEl.checked = savedChimeToggle === 'true';
+    }
+    // 時報サウンドセレクトの復元
+    const savedChimeSound = localStorage.getItem('chimeSound') || 'electronic';
+    const chimeSoundEl = document.getElementById('chime-sound-select');
+    if (chimeSoundEl) chimeSoundEl.value = savedChimeSound;
+
+    // 3. タイマー音トグルボタンの復元
+    const savedAlarmToggle = localStorage.getItem('alarmToggle');
+    const alarmToggleEl = document.getElementById('alarm-toggle');
+    if (savedAlarmToggle !== null && alarmToggleEl) {
+        alarmToggleEl.checked = savedAlarmToggle === 'true';
+    }
+
+    // 4. テーマの復元
+    const savedTheme = localStorage.getItem('clockTheme') || 'dark';
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    if (html && themeBtn) {
+        html.setAttribute('data-color-mode', savedTheme);
+        themeBtn.textContent = savedTheme === 'light' ? 'Dark' : 'Light';
+    }
+
+    // 5. 文字色の復元
+    const savedColor = localStorage.getItem('clockColor') || '#ff9500';
+    changeColor(savedColor);
+
+    // 6. 明るさの復元
+    const savedBrightness = localStorage.getItem('clockBrightness') || '1';
+    changeBrightness(savedBrightness);
+
+    // チェックボックスやセレクトボックスの変更を監視して即時保存するイベントリスナー
+    if (chimeToggleEl) {
+        chimeToggleEl.addEventListener('change', (e) => {
+            localStorage.setItem('chimeToggle', e.target.checked);
+        });
+    }
+    if (chimeSoundEl) {
+        chimeSoundEl.addEventListener('change', (e) => {
+            localStorage.setItem('chimeSound', e.target.value);
+        });
+    }
+    if (alarmToggleEl) {
+        alarmToggleEl.addEventListener('change', (e) => {
+            localStorage.setItem('alarmToggle', e.target.checked);
+        });
+    }
+
+    // 時計の1秒定期更新スタート
+    updateDisplay();
+    setInterval(updateDisplay, 1000);
+});
+
