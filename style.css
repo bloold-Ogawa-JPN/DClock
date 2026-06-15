@@ -72,13 +72,9 @@ body.fullscreen-mode .clock-container {
     margin: 0; 
 }
 
+/* 3. 日付の文字色を設定 */
 .date-display {
-    font-size: 2.2rem; 
-    font-weight: 500;
-    color: var(--clock-color);
-    letter-spacing: 0.05em;
-    margin-bottom: 24px;
-    transition: color 0.2s, font-size 0.3s ease-in-out;
+    color: var(--neon-color, #ff9500) !important;
 }
 
 body.fullscreen-mode .date-display { 
@@ -136,8 +132,11 @@ body.fullscreen-mode .date-display {
 }
 
 .colon-dot.on {
-    background-color: var(--clock-color);
-    box-shadow: 0 0 1.2vw var(--clock-color), 0 0 0.4vw var(--clock-color);
+    /* 丸い点を背景色で塗っている場合 */
+    background-color: var(--neon-color, #ff9500) !important;
+    
+    /* 丸い点を文字として表示している場合 */
+    color: var(--neon-color, #ff9500) !important;
 }
 
 .seg {
@@ -147,9 +146,13 @@ body.fullscreen-mode .date-display {
     transition: background-color 0.05s ease, box-shadow 0.05s ease;
 }
 
+/* 1. 点灯しているセグメント（液晶の棒）の色を設定 */
 .seg.on {
-    background-color: var(--clock-color);
-    box-shadow: 0 0 1.2vw var(--clock-color), 0 0 0.4vw var(--clock-color);
+    /* 固定の色（#ff9500など）から、以下の変数指定に書き換えます */
+    background-color: var(--neon-color, #ff9500) !important;
+
+    /* もし光るエフェクト（影）をつけている場合は、影の色も連動させます */
+    box-shadow: 0 0 10px var(--neon-color, #ff9500) !important; 
 }
 
 /* --- セグメント配置ロジック（％指定） --- */
