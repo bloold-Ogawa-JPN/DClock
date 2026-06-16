@@ -59,23 +59,40 @@ function playTone(freq, type, duration) {
     osc.stop(audioCtx.currentTime + duration);
 }
 
-// 時報音
-function triggerChime() {
+// 時報音（引数で現在の秒数を受け取り、リアルタイムに音を出し分け）
+function triggerChime(currentSecond) {
     const chimeSelect = document.getElementById('chime-sound-select').value;
+    
     if (chimeSelect === 'electronic') {
-        playTone(880, 'sine', 0.1);
-        setTimeout(() => playTone(880, 'sine', 0.1), 1000);
-        setTimeout(() => playTone(880, 'sine', 0.1), 2000);
-        setTimeout(() => playTone(1760, 'sine', 0.5), 3000);
+        // --- 電子音（57, 58, 59秒で低いピ、00秒で高いピピピ） ---
+        if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
+            playTone(880, 'sine', 0.1);
+        } else if (currentSecond === 0) {
+            playTone(1760, 'sine', 0.1);
+            setTimeout(() => playTone(1760, 'sine', 0.1), 150);
+            setTimeout(() => playTone(1760, 'sine', 0.1), 300);
+        }
     } else if (chimeSelect === 'bell') {
-        playTone(440, 'triangle', 1.5);
-        setTimeout(() => playTone(554.37, 'triangle', 1.2), 200);
+        // --- 鐘の音（57, 58, 59秒でコン、00秒で大きなカーン） ---
+        if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
+            playTone(660, 'triangle', 0.3);
+        } else if (currentSecond === 0) {
+            playTone(440, 'triangle', 2.0);
+            setTimeout(() => playTone(554.37, 'triangle', 1.5), 150);
+        }
     } else if (chimeSelect === 'pipipip') {
-        playTone(2000, 'square', 0.05);
-        setTimeout(() => playTone(2000, 'square', 0.05), 150);
-        setTimeout(() => playTone(2000, 'square', 0.05), 300);
+        // --- レトロ（57, 58, 59秒で短いピ、00秒で長めのピピピピッ） ---
+        if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
+            playTone(2000, 'square', 0.03);
+        } else if (currentSecond === 0) {
+            playTone(2000, 'square', 0.05);
+            setTimeout(() => playTone(2000, 'square', 0.05), 100);
+            setTimeout(() => playTone(2000, 'square', 0.05), 200);
+            setTimeout(() => playTone(2200, 'square', 0.15), 300);
+        }
     }
 }
+
 
 // アラーム音（タイマー終了時）
 function triggerAlarm() {
@@ -102,7 +119,7 @@ function drawDigit(element, num) {
     });
 }
 
-// 液晶表示の更新処理
+// 液晶表示の更新処理（57秒からの時報カウントダウン対応版）
 function updateDisplay() {
     let hoursStr, minutesStr, secondsStr;
     const periodEl = document.getElementById('period-display');
@@ -138,13 +155,18 @@ function updateDisplay() {
         const rawMinute = now.getMinutes();
         const rawSecond = now.getSeconds();
 
-        // 毎時0分0秒の時報判定
-        if (rawMinute === 0 && rawSecond === 0 && rawHour !== lastHour) {
+        // ★ 59分57秒〜59秒、または0分0秒のタイミングを正確にキャッチ
+        const isChimeTime = (rawMinute === 59 && (rawSecond === 57 || rawSecond === 58 || rawSecond === 59)) || (rawMinute === 0 && rawSecond === 0);
+
+        if (isChimeTime) {
             const chimeToggle = document.getElementById('chime-toggle');
             if (chimeToggle && chimeToggle.checked) {
-                triggerChime();
+                // 1秒に1回だけ音を鳴らす（重複防止のために秒まで細かくチェック）
+                if (typeof this.lastChimeSec === 'undefined' || this.lastChimeSec !== rawSecond) {
+                    triggerChime(rawSecond);
+                    this.lastChimeSec = rawSecond; // 鳴らした秒数を記録
+                }
             }
-            lastHour = rawHour;
         }
 
         // 12時間表記 / 24時間表記の出し分け
