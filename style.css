@@ -2,32 +2,23 @@
    1. 基本設定・テーマ変数
    ========================================================================== */
 :root {
-    /* JavaScriptのカラーピッカーと連動する変数 */
+    /* JavaScriptのカラーピッカーと連動する変数（未設定時の初期値：オレンジ） */
     --neon-color: #ff9500;
     
     /* ダークテーマ（デフォルト）の配色 */
     --bg-color: #0c0c0c;
     --panel-bg: #1c1c1e;
-    
-    /* ★【変更】消灯している液晶のベース色を「#555555」からさらに暗い「#1a1a1a」に変更 */
-    --text-muted: #121212; 
-    
     --input-bg: #2c2c2e;
     --text-color: #ffffff;
 }
 
-/* ライトテーマ切り替え時の配色 */
+/* ライトテーマ切り替え時の配色（HTMLの data-color-mode="light" と連動） */
 [data-color-mode="light"] {
     --bg-color: #f2f2f7;
     --panel-bg: #ffffff;
-    
-    /* ★【変更】ライトテーマ時も、消灯部分を少しだけ暗く（なじむように）調整 */
-    --text-muted: #dcdce2; 
-    
     --input-bg: #e5e5ea;
     --text-color: #000000;
 }
-
 
 * {
     box-sizing: border-box;
@@ -63,7 +54,7 @@ body {
     width: 100%;
     max-width: 800px;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s; /* 明るさ調整用 */
 }
 
 /* 日付表示 */
@@ -72,19 +63,18 @@ body {
     font-weight: bold;
     margin-bottom: 20px;
     letter-spacing: 2px;
-    color: var(--neon-color) !important;
+    color: var(--neon-color) !important; /* カラーピッカーと連動 */
     transition: color 0.2s;
 }
 
-/* ★液晶全体を囲むラッパー：縦画面で絶対にズレないように中央寄せを徹底強化 */
+/* 液晶全体を囲むラッパー：縦画面で絶対にズレないように中央寄せ・下ライン揃えを徹底強化 */
 .time-wrapper {
     display: flex !important;
     align-items: flex-end !important; /* 時・分・秒の下ラインを綺麗に揃える */
     justify-content: center !important;
     width: 100% !important;
     max-width: 100vw !important;
-    /* 画面幅（vw）をベースにした正確な隙間計算（ズレ防止） */
-    gap: 0.8vw !important; 
+    gap: 0.8vw !important; /* 画面幅をベースにした正確な隙間計算 */
     padding: 20px 0 !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
@@ -94,10 +84,10 @@ body {
 .period-display {
     font-size: 1.2rem;
     font-weight: bold;
-    align-self: flex-start;
-    margin-top: 6px;
+    align-self: flex-start; /* 上端揃えに設定 */
+    margin-top: 6px;       /* 7セグメントの上端と綺麗に重なるよう微調整 */
     margin-right: 5px;
-    color: var(--neon-color) !important;
+    color: var(--neon-color) !important; /* カラーピッカーと連動 */
     font-family: monospace;
     transition: color 0.2s;
 }
@@ -112,44 +102,48 @@ body {
 
 /* ==========================================================================
    3. 7セグメント液晶ディスプレイ（デジタル数字）の描画
-  ========================================================================== */
+   ========================================================================== */
 
 /* --- 📱 【基本】スマホ縦向き時のサイズ（横幅 vw 基準） --- */
 .digit {
     position: relative;
     width: 7.5vw;
-    /* ★高さを13.75vwから15vwに少し広げ、縦棒が上下で衝突するのを防ぎます */
-    height: 15vw; 
+    height: 15vw; /* 高さを潰さない比率にして衝突を防ぐ */
     max-width: 60px;
-    max-height: 120px; /* 高さに余裕を持たせる */
+    max-height: 120px;
     display: inline-block;
 }
+
+/* 秒用の桁は少し小さくする */
 .digit-sec {
     width: 5.6vw;
-    /* ★秒の桁も同様に、潰れないように高さを調整 */
     height: 11.2vw;
     max-width: 45px;
     max-height: 90px;
-    align-self: flex-end;
+    align-self: flex-end; /* 秒は下側に揃える */
     margin-bottom: 0.6vw;
     display: inline-block;
 }
+
+/* 各セグメント（液晶の棒）の共通設定 */
 .seg {
     position: absolute !important;
-    background-color: #111111 !important;
+    background-color: #111111 !important; /* 消灯時は外部CSSに負けない暗いグレーで直接固定 */
     border-radius: 0.5vw !important;
     transition: background-color 0.1s, box-shadow 0.1s;
 }
+
+/* 液晶が点灯（ON）した時の色：最優先でカラーピッカーと完全連動 */
 .seg.on {
     background-color: var(--neon-color) !important;
-    box-shadow: 0 0 1.5vw var(--neon-color) !important;
+    box-shadow: 0 0 1.5vw var(--neon-color) !important; /* ネオン風の発光エフェクト */
 }
-
-/* 縦向きセグメント配置（A〜G）★上下の棒が絶対にかぶらないように比率を再計算 */
+/* --- セグメントの位置計算（上下が重なり合ってはみ出ないよう比率を調整） --- */
+/* A（上・横棒） */
 .digit .seg-a { top: 0 !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
 .digit-sec .seg-a { height: 0.75vw !important; left: 0.6vw !important; right: 0.6vw !important; }
 
-/* B（右上・縦棒）：下端の引き伸ばし（bottom）を調整して中央のG棒と重ならないように固定 */
+/* B（右上・縦棒）：引き伸ばし制限（bottom）を調整し中央のG棒との衝突を防ぐ */
 .digit .seg-b { top: 0.75vw !important; right: 0 !important; bottom: 7.8vw !important; width: 1vw !important; }
 .digit-sec .seg-b { top: 0.6vw !important; right: 0 !important; bottom: 5.8vw !important; width: 0.75vw !important; }
 
@@ -157,6 +151,7 @@ body {
 .digit .seg-c { top: 7.8vw !important; right: 0 !important; bottom: 0.75vw !important; width: 1vw !important; }
 .digit-sec .seg-c { top: 5.8vw !important; right: 0 !important; bottom: 0.6vw !important; width: 0.75vw !important; }
 
+/* D（下・横棒） */
 .digit .seg-d { bottom: 0 !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
 .digit-sec .seg-d { height: 0.75vw !important; left: 0.6vw !important; right: 0.6vw !important; }
 
@@ -168,9 +163,102 @@ body {
 .digit .seg-f { top: 0.75vw !important; left: 0 !important; bottom: 7.8vw !important; width: 1vw !important; }
 .digit-sec .seg-f { top: 0.6vw !important; right: 0 !important; bottom: 5.8vw !important; width: 0.75vw !important; }
 
-/* G（中央・横棒）：上下の縦棒のちょうど隙間にピタッと収まる位置（top: 7vw）に固定 */
+/* G（中央・横棒）：上下の縦棒の隙間にピタッと収める */
 .digit .seg-g { top: 7vw !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
 .digit-sec .seg-g { top: 5.2vw !important; left: 0.6vw !important; right: 0.6vw !important; height: 0.75vw !important; }
+
+
+/* --- コロン（：）の描画と色連動（縦画面のサイズズレ・高さを修正） --- */
+.colon {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 2vw !important; /* ２つの点の間隔を最適化 */
+    width: 2.5vw !important;
+    height: 15vw !important; /* 数字の高さ（15vw）に完全同期 */
+    align-items: center !important;
+}
+
+.colon-dot {
+    width: 1vw !important;
+    height: 1vw !important;
+    border-radius: 50% !important;
+    background-color: #111111 !important; /* 消灯時は直接暗い色に固定 */
+    transition: background-color 0.1s, box-shadow 0.1s;
+}
+
+/* コロンが点灯（ON）した時の色：最優先で連動 */
+.colon-dot.on {
+    background-color: var(--neon-color) !important;
+    box-shadow: 0 0 1.5vw var(--neon-color) !important;
+}
+/* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
+@media (orientation: landscape) {
+    .time-wrapper {
+        gap: 2vh !important;
+    }
+    
+    .digit {
+        width: 11vh;       /* 高さを基準に横幅を決定（画面全体の11%） */
+        height: 20vh;      /* 高さを画面全体の20%まで拡大 */
+        max-width: none;
+        max-height: none;
+    }
+    
+    .digit-sec {
+        width: 8vh;
+        height: 15vh;
+        max-width: none;
+        max-height: none;
+        margin-bottom: 0.8vh;
+    }
+    
+    .seg {
+        border-radius: 0.8vh !important;
+    }
+    
+    .seg.on {
+        box-shadow: 0 0 2.5vh var(--neon-color) !important;
+    }
+    
+    /* 横向きセグメント配置（vh基準で再計算） */
+    .digit .seg-a { top: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit-sec .seg-a { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    
+    .digit .seg-b { top: 1.2vh !important; right: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    .digit-sec .seg-b { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    
+    .digit .seg-c { top: 11vh !important; right: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    .digit-sec .seg-c { top: 8.2vh !important; right: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    
+    .digit .seg-d { bottom: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit-sec .seg-d { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    
+    .digit .seg-e { top: 11vh !important; left: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    .digit-sec .seg-e { top: 8.2vh !important; left: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    
+    .digit .seg-f { top: 1.2vh !important; left: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    .digit-sec .seg-f { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    
+    .digit .seg-g { top: 9.2vh !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit-sec .seg-g { top: 6.9vh !important; left: 0.9vh !important; right: 0.9vh !important; height: 1.2vh !important; }
+    
+    /* 横向き用のコロン調整 */
+    .colon {
+        gap: 4vh !important;
+        width: 4vh !important;
+        height: 20vh !important;
+    }
+    
+    .colon-dot {
+        width: 1.6vh !important;
+        height: 1.6vh !important;
+    }
+    
+    .colon-dot.on {
+        box-shadow: 0 0 2.5vh var(--neon-color) !important;
+    }
+}
 
 /* ==========================================================================
    4. タイマー設定・情報パネル
@@ -216,7 +304,6 @@ body {
     font-size: 1.1rem;
     text-align: center;
 }
-
 /* ==========================================================================
    5. iPhone最適化コントロールメニュー（画面下部）
    ========================================================================== */
@@ -331,38 +418,45 @@ input[type="range"] {
     width: 70px;
     cursor: pointer;
 }
+
+/* ユーティリティクラス */
+.flex-wrap { flex-wrap: wrap; }
+.justify-center { justify-content: center; }
+.gap-2 { gap: 8px; }
+
+
 /* ==========================================================================
-   6. 【拡張】メニュー非表示（フルスクリーンモード）時の拡大設定
+   6. メニュー非表示（全画面表示モード）時の自動拡大設定
    ========================================================================== */
 
 /* 📱 縦向き時にメニューが消えたら、数字を1.2倍大きくする */
 .menu-hidden .digit {
     width: 9vw !important;
-    height: 16.5vw !important;
+    height: 18vw !important;
 }
 .menu-hidden .digit-sec {
     width: 6.7vw !important;
-    height: 12.7vw !important;
+    height: 13.4vw !important;
     margin-bottom: 0.7vw !important;
 }
 .menu-hidden .colon {
-    gap: 3vw !important;
+    gap: 2.4vw !important;
     width: 3vw !important;
-    height: 16.5vw !important;
+    height: 18vw !important;
 }
 .menu-hidden .colon-dot {
     width: 1.2vw !important;
     height: 1.2vw !important;
 }
 
-/* 🔄 📱 横向き時にメニューが消えたら、上下いっぱいに巨大化（約1.5倍）させる */
+/* 🔄 📱 横向き時にメニューが消えたら、上下いっぱいに限界まで巨大化させる */
 @media (orientation: landscape) {
     .menu-hidden .time-wrapper {
         gap: 3vh !important;
     }
     .menu-hidden .digit {
-        width: 16vh !important;    /* 横向き時の限界値まで拡大 */
-        height: 30vh !important;   /* 画面の縦幅の約3分の1を占めるサイズ */
+        width: 16vh !important;
+        height: 30vh !important;
     }
     .menu-hidden .digit-sec {
         width: 12vh !important;
@@ -379,7 +473,7 @@ input[type="range"] {
         height: 2.4vh !important;
     }
     
-    /* 横向きかつメニュー非表示時は、セグメントの配置バランスも拡大 */
+    /* 横向き全画面時のセグメント配置バランスの調整 */
     .menu-hidden .digit .seg-a { left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
     .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
     .menu-hidden .digit .seg-b { top: 1.8vh !important; bottom: 16.5vh !important; width: 2.4vh !important; }
@@ -395,8 +489,3 @@ input[type="range"] {
     .menu-hidden .digit .seg-g { top: 13.8vh !important; left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
     .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
 }
-
-/* ユーティリティクラス */
-.flex-wrap { flex-wrap: wrap; }
-.justify-center { justify-content: center; }
-.gap-2 { gap: 8px; }
