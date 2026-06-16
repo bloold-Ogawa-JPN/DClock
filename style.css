@@ -133,7 +133,7 @@ body {
 /* 各セグメント（液晶の棒）の共通設定 */
 .seg {
     position: absolute !important;
-    background-color: #0c0c0c !important; /* 消灯時は直接暗い色に固定 */
+    background-color: #111111 !important; /* 消灯時は直接暗い色に固定 */
     border-radius: 0.5vw !important;
     transition: background-color 0.1s, box-shadow 0.1s;
 }
