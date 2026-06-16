@@ -63,7 +63,7 @@ body {
     width: 100%;
     max-width: 800px;
     cursor: pointer;
-    transition: opacity 0.2s; /* 明るさ調整用 */
+    transition: opacity 0.2s;
 }
 
 /* 日付表示 */
@@ -72,28 +72,32 @@ body {
     font-weight: bold;
     margin-bottom: 20px;
     letter-spacing: 2px;
-    color: var(--neon-color) !important; /* カラーピッカーと連動 */
+    color: var(--neon-color) !important;
     transition: color 0.2s;
 }
 
-/* 液晶全体を囲むラッパー */
+/* ★液晶全体を囲むラッパー：縦画面で絶対にズレないように中央寄せを徹底強化 */
 .time-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    position: relative;
-    padding: 20px 10px;
+    display: flex !important;
+    align-items: flex-end !important; /* 時・分・秒の下ラインを綺麗に揃える */
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    /* 画面幅（vw）をベースにした正確な隙間計算（ズレ防止） */
+    gap: 0.8vw !important; 
+    padding: 20px 0 !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
 }
 
-/* ★AMPM表示：位置を時間表示の上端に揃え、色を連動 */
+/* AMPM表示：位置を時間表示の上端に揃え、色を連動 */
 .period-display {
     font-size: 1.2rem;
     font-weight: bold;
-    align-self: flex-start; /* 上端揃えに設定 */
-    margin-top: 6px;       /* 7セグメントの上端と綺麗に重なるよう微調整 */
+    align-self: flex-start;
+    margin-top: 6px;
     margin-right: 5px;
-    color: var(--neon-color) !important; /* カラーピッカーと連動 */
+    color: var(--neon-color) !important;
     font-family: monospace;
     transition: color 0.2s;
 }
