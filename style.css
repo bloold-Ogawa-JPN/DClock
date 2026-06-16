@@ -168,14 +168,16 @@ body {
 .digit-sec .seg-g { top: 5.2vw !important; left: 0.6vw !important; right: 0.6vw !important; height: 0.75vw !important; }
 
 
-/* --- コロン（：）の描画と色連動（縦画面のサイズズレ・高さを修正） --- */
+/* --- コロン（：）の描画と色連動（縦画面のサイズズレを修正） --- */
 .colon {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    gap: 2vw !important; /* ２つの点の間隔を最適化 */
+    /* ★ドットの間隔が広がりすぎないよう、2.5vw から 2vw に少し狭めました */
+    gap: 2vw !important; 
     width: 2.5vw !important;
-    height: 15vw !important; /* 数字の高さ（15vw）に完全同期 */
+    /* ★数字の新しい高さ（15vw）に合わせて、コロン全体の高さも一貫性を持たせます */
+    height: 15vw !important; 
     align-items: center !important;
 }
 
@@ -187,11 +189,12 @@ body {
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
-/* コロンが点灯（ON）した時の色：最優先で連動 */
+/* ★コロンが点灯（ON）した時の色 */
 .colon-dot.on {
     background-color: var(--neon-color) !important;
     box-shadow: 0 0 1.5vw var(--neon-color) !important;
 }
+
 /* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
 @media (orientation: landscape) {
     .time-wrapper {
