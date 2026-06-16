@@ -333,7 +333,7 @@ function changeBrightness(brightnessValue) {
     localStorage.setItem('clockBrightness', brightnessValue);
 }
 
-// 画面をタップした際の挙動
+// 画面をタップした際の挙動（メニュー非表示に合わせて文字を巨大化）
 function toggleFullscreen() {
     initAudio(); 
     requestWakeLock(); 
@@ -343,11 +343,16 @@ function toggleFullscreen() {
     if (controls) {
         if (controls.style.display === 'none') {
             controls.style.display = 'flex';
+            // メニューが表示されたので、拡大モードのクラスを外す
+            document.body.classList.remove('menu-hidden');
         } else {
             controls.style.display = 'none';
+            // メニューが消えたので、拡大モードのクラスを付与する
+            document.body.classList.add('menu-hidden');
         }
     }
 }
+
 
 /* --- 次回起動時の自動読み込み（初期化） --- */
 window.addEventListener('DOMContentLoaded', () => {
