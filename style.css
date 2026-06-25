@@ -440,7 +440,8 @@ input[type="range"] {
 }
 .menu-hidden .digit-sec {
     width: 6.7vw !important;
-    height: 13.4vw !important;
+   /* height: 13.4vw !important; */
+   height: 15vw !important;
     margin-bottom: 0.7vw !important;
 }
 .menu-hidden .colon {
