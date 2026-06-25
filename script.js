@@ -155,18 +155,23 @@ function updateDisplay() {
         const rawMinute = now.getMinutes();
         const rawSecond = now.getSeconds();
 
-        // ★ 59分57秒〜59秒、または0分0秒のタイミングを正確にキャッチ
-        const isChimeTime = (rawMinute === 59 && (rawSecond === 57 || rawSecond === 58 || rawSecond === 59)) || (rawMinute === 0 && rawSecond === 0);
+        // 1. 条件判定（59分57〜59秒、または0分0秒）
+        const isChimeTime = (rawMinute === 59 && [57, 58, 59].includes(rawSecond)) || (rawMinute === 0 && rawSecond === 0);
 
         if (isChimeTime) {
             const chimeToggle = document.getElementById('chime-toggle');
+    
+        // 2. トグルスイッチのチェック
             if (chimeToggle && chimeToggle.checked) {
-                // 1秒に1回だけ音を鳴らす（重複防止のために秒まで細かくチェック）
-                if (typeof this.lastChimeSec === 'undefined' || this.lastChimeSec !== rawSecond) {
+        
+        // 3. 同じ秒数で2回以上鳴るのを防ぐ（一意なキーとして分+秒を使用するとより安全）
+                const timeKey = `${rawMinute}:${rawSecond}`;
+        
+                if (typeof this.lastChimeKey === 'undefined' || this.lastChimeKey !== timeKey) {
                     triggerChime(rawSecond);
-                    this.lastChimeSec = rawSecond; // 鳴らした秒数を記録
+                    this.lastChimeKey = timeKey; // 鳴らしたタイミングを記録
                 }
-            }
+            } 
         }
 
         // 12時間表記 / 24時間表記の出し分け
