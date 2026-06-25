@@ -10,6 +10,7 @@
     --panel-bg: #1c1c1e;
     --input-bg: #2c2c2e;
     --text-color: #ffffff;
+    --seg-off-color: #1a1a1a; /* ★追加：暗い背景に馴染む深いグレー */
 }
 
 /* ライトテーマ切り替え時の配色（HTMLの data-color-mode="light" と連動） */
@@ -18,6 +19,7 @@
     --panel-bg: #ffffff;
     --input-bg: #e5e5ea;
     --text-color: #000000;
+    --seg-off-color: #e5e5ea; /* ★追加：背景に馴染む薄いグレー（--input-bgと同じ） */
 }
 
 * {
@@ -128,7 +130,8 @@ body {
 /* 各セグメント（液晶の棒）の共通設定 */
 .seg {
     position: absolute !important;
-    background-color: #111111 !important; /* 消灯時は外部CSSに負けない暗いグレーで直接固定 */
+    /* background-color: #111111 !important; /* 消灯時は外部CSSに負けない暗いグレーで直接固定 */
+    background-color: var(--seg-off-color) !important; 
     border-radius: 0.5vw !important;
     transition: background-color 0.1s, box-shadow 0.1s;
 }
@@ -182,7 +185,8 @@ body {
     width: 1vw !important;
     height: 1vw !important;
     border-radius: 50% !important;
-    background-color: #111111 !important; /* 消灯時は直接暗い色に固定 */
+    /* background-color: #111111 !important; /* 消灯時は直接暗い色に固定 */
+    background-color: var(--seg-off-color) !important; 
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
