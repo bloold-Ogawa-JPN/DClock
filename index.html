@@ -95,9 +95,9 @@
         <p class="panel-title">TIMER CONTROL</p>
         
         <div class="panel-row" id="timer-setup">
-            <input type="number" id="timer-hours" min="0" max="23" value="0" placeholder="時"><span>:</span>
-            <input type="number" id="timer-minutes" min="0" max="59" value="3" placeholder="分"><span>:</span>
-            <input type="number" id="timer-seconds" min="0" max="59" value="0" placeholder="秒">
+            <input type="number" id="timer-hours" min="0" max="23" value="0" placeholder="時" inputmode="numeric" pattern="[0-9]*"><span>:</span>
+            <input type="number" id="timer-minutes" min="0" max="59" value="3" placeholder="分" inputmode="numeric" pattern="[0-9]*"><span>:</span>
+            <input type="number" id="timer-seconds" min="0" max="59" value="0" placeholder="秒" inputmode="numeric" pattern="[0-9]*">
             <button class="action-btn" onclick="startTimer()">Start</button>
         </div>
 
