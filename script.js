@@ -88,7 +88,7 @@ function triggerChime(currentSecond) {
             playTone(2000, 'square', 0.05);
             setTimeout(() => playTone(2000, 'square', 0.05), 100);
             setTimeout(() => playTone(2000, 'square', 0.05), 200);
-            setTimeout(() => playTone(2200, 'square', 0.15), 300);
+            setTimeout(() => playTone(1900, 'square', 0.15), 300);
         }
     }
 }
