@@ -227,11 +227,22 @@ async function requestWakeLock() {
 }
 
 // バックグラウンド（別アプリ）から復帰した際に常時点灯を再取得
-document.addEventListener('visibilitychange', async () => {
-    if (wakeLock !== null && document.visibilityState === 'visible') {
-        await requestWakeLock();
+async function activateWakeLock() {
+    try {
+        wakeLock = await navigator.wakeLock.request('screen');
+
+        // ★ ここで初めて wakeLock にイベントを付けられる
+        wakeLock.addEventListener('release', () => {
+            console.log('Wake Lock が解除されました。再取得します。');
+            activateWakeLock();
+        });
+
+        console.log('Wake Lock 有効化');
+    } catch (err) {
+        console.error('Wake Lock エラー:', err);
     }
-});
+}
+
 
 /* --- タイマー制御パネル --- */
 function toggleTimerPanel() {
@@ -373,8 +384,8 @@ function changeBrightness(brightnessValue) {
 // 画面をタップした際の挙動（メニュー非表示に合わせて文字を巨大化）
 function toggleFullscreen() {
     initAudio(); 
-    requestWakeLock(); 
-    
+/*    requestWakeLock(); */
+    activateWakeLock(); // ← requestWakeLock() ではなく activateWakeLock()
     // ボトムメニューの表示切り替え
     const controls = document.querySelector('.controls-container');
     if (controls) {
