@@ -238,12 +238,22 @@ function toggleTimerPanel() {
     const panel = document.getElementById('timer-panel');
     const btn = document.getElementById('timer-toggle-btn');
     if (!panel || !btn) return;
+
     if (panel.style.display === 'flex') {
         panel.style.display = 'none';
         btn.classList.remove('active');
     } else {
         panel.style.display = 'flex';
         btn.classList.add('active');
+
+        // ★ パネルを開いた直後にカーソル位置を右端へ移動
+        setTimeout(() => {
+            document.querySelectorAll('#timer-panel input[type="number"]').forEach(input => {
+                const val = input.value;
+                input.value = '';   // 一度空にする
+                input.value = val;  // 値を戻す → カーソルが末尾へ移動
+            });
+        }, 50); // iPhone Safari は少し遅延させると安定
     }
 }
 
