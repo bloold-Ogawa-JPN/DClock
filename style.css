@@ -305,7 +305,8 @@ body {
     color: var(--text-color);
     padding: 8px;
     border-radius: 6px;
-    font-size: 1.1rem;
+    /* font-size: 1.1rem; */
+    font-size: 16px;
     text-align: center;
 }
 /* ==========================================================================
