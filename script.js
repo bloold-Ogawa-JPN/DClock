@@ -447,7 +447,14 @@ window.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('alarmToggle', e.target.checked);
         });
     }
-
+    // --- iPhone Safari 対策：入力欄タップ時にカーソルを右端へ移動 ---
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('focus', function() {
+            const val = this.value;
+            this.value = '';   // 一度空にする
+            this.value = val;  // 値を戻す → カーソルが末尾へ移動
+        });
+    });
     // 時計の1秒定期更新スタート
     updateDisplay();
     setInterval(updateDisplay, 1000);
