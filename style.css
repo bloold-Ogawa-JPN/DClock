@@ -263,6 +263,17 @@ body {
         box-shadow: 0 0 2.5vh var(--neon-color) !important;
     }
 }
+/* --- 🔄 📱 【縦向き限定】スマホ横向き時対応 --- */
+@media (orientation: portrait) {
+    .colon {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        height: auto !important;   /* ← 100% を解除して自然な高さに */
+        margin: 0 1vw !important;  /* 必要なら左右の余白を調整 */
+    }
+}
+
 
 /* ==========================================================================
    4. タイマー設定・情報パネル
