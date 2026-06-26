@@ -432,7 +432,6 @@ input[type="range"] {
 /* ==========================================================================
    6. メニュー非表示（全画面表示モード）時の自動拡大設定
    ========================================================================== */
-
 /* 📱 縦向き時にメニューが消えたら、数字を1.2倍大きくする */
 .menu-hidden .digit {
     width: 9vw !important;
@@ -452,6 +451,36 @@ input[type="range"] {
     width: 1.2vw !important;
     height: 1.2vw !important;
 }
+
+/* 🚀 全画面モード用のセグメント位置・サイズ再計算（1.2倍の比率に完全同期） */
+/* A（上・横棒） */
+.menu-hidden .digit .seg-a { top: 0 !important; left: 0.9vw !important; right: 0.9vw !important; height: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-a { height: 0.9vw !important; left: 0.72vw !important; right: 0.72vw !important; }
+
+/* B（右上・縦棒） */
+.menu-hidden .digit .seg-b { top: 0.9vw !important; right: 0 !important; bottom: 9.36vw !important; width: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-b { top: 0.72vw !important; right: 0 !important; bottom: 6.96vw !important; width: 0.9vw !important; }
+
+/* C（右下・縦棒） */
+.menu-hidden .digit .seg-c { top: 9.36vw !important; right: 0 !important; bottom: 0.9vw !important; width: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-c { top: 6.96vw !important; right: 0 !important; bottom: 0.72vw !important; width: 0.9vw !important; }
+
+/* D（下・横棒） */
+.menu-hidden .digit .seg-d { bottom: 0 !important; left: 0.9vw !important; right: 0.9vw !important; height: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-d { height: 0.9vw !important; left: 0.72vw !important; right: 0.72vw !important; }
+
+/* E（左下・縦棒） */
+.menu-hidden .digit .seg-e { top: 9.36vw !important; left: 0 !important; bottom: 0.9vw !important; width: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-e { top: 6.96vw !important; left: 0 !important; bottom: 0.72vw !important; width: 0.9vw !important; }
+
+/* F（左上・縦棒） */
+.menu-hidden .digit .seg-f { top: 0.9vw !important; left: 0 !important; bottom: 9.36vw !important; width: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-f { top: 0.72vw !important; left: 0 !important; bottom: 6.96vw !important; width: 0.9vw !important; }
+
+/* G（中央・横棒） */
+.menu-hidden .digit .seg-g { top: 8.4vw !important; left: 0.9vw !important; right: 0.9vw !important; height: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-g { top: 6.24vw !important; left: 0.72vw !important; right: 0.72vw !important; height: 0.9vw !important; }
+
 
 /* 🔄 📱 横向き時にメニューが消えたら、上下いっぱいに限界まで巨大化させる */
 @media (orientation: landscape) {
