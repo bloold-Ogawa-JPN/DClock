@@ -269,7 +269,7 @@ body {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        height: auto !important;   /* ← 100% を解除して自然な高さに */
+        height: 15vm !important;   /* ← 100% を解除して自然な高さに */
         margin: 0 1vw !important;  /* 必要なら左右の余白を調整 */
     }
 }
