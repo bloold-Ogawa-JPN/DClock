@@ -205,14 +205,14 @@ body {
 
     /* AM/PM を拡大 */
     .menu-hidden .period-display {
-        font-size: 6.5vh !important;
+        font-size: 8vh !important;
         margin-right: 2vh !important;
         margin-top: 0 !important; /* 上揃えを解除して中央寄りに */
         align-self: center !important;
     }
     /* カレンダー（日付）を拡大 */
     .menu-hidden .date-display {
-        font-size: 6.5vh !important;
+        font-size: 8vh !important;
         margin-bottom: 2vh !important;
         letter-spacing: 0.3vh !important;
     }
