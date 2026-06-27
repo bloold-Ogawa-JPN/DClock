@@ -203,18 +203,20 @@ body {
         font-size: 6vw !important;
         margin-right: 2vw !important;
     }
-
+    body.menu-hidden #date-el {
+        font-size: 6vw !important;   /* AM/PM と同じ大きさ */
+        margin-bottom: 2vw !important;
+        letter-spacing: 0.2vw !important; /* 読みやすさUP（任意） */
+    }
     body.menu-hidden .time-wrapper {
         gap: 2vh !important;
     }
-
     body.menu-hidden .digit {
         width: 18vw !important;
         height: 18vw !important;
         max-width: none;
         max-height: none;
     }
-
     body.menu-hidden .digit-sec {
         width: 8vh !important;
         height: 15vh !important;
@@ -222,15 +224,12 @@ body {
         max-height: none;
         margin-bottom: 0.8vh !important;
     }
-
     body.menu-hidden .seg {
         border-radius: 0.8vh !important;
     }
-
     body.menu-hidden .seg.on {
         box-shadow: 0 0 2.5vh var(--neon-color) !important;
     }
-
     /* digit のセグメント配置 */
     body.menu-hidden .digit .seg-a { top: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
     body.menu-hidden .digit .seg-b { top: 1.2vh !important; right: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
@@ -255,12 +254,10 @@ body {
         width: 4vh !important;
         height: 18vh !important;
     }
-
     body.menu-hidden .colon-dot {
         width: 1.6vh !important;
         height: 1.6vh !important;
     }
-
     body.menu-hidden .colon-dot.on {
         box-shadow: 0 0 2.5vh var(--neon-color) !important;
     }
