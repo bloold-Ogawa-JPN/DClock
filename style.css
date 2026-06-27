@@ -213,7 +213,6 @@ body {
         max-width: none;
         max-height: none;
     }
-   
     .digit-sec {
         width: 8vh;
         height: 15vh;
@@ -224,8 +223,7 @@ body {
     
     .seg {
         border-radius: 0.8vh !important;
-    }
-    
+    }    
     .seg.on {
         box-shadow: 0 0 2.5vh var(--neon-color) !important;
     }
