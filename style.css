@@ -202,7 +202,10 @@ body {
         font-size: 6vw !important;   /* ← landscape では vw 基準が最適 */
         margin-right: 2vw !important;
     }
-   
+    body.menu-hidden #date-el {
+        font-size: 6vw !important;   /* AM/PM と同じ大きさ */
+        margin-bottom: 2vw !important; /* 少し余白をつけると綺麗 */
+    }   
    .time-wrapper {
         gap: 2vh !important;
     }
