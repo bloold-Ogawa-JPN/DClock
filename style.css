@@ -199,44 +199,72 @@ body {
 /* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
 /* 横向きフルスクリーン専用 */
 @media (orientation: landscape) {
-    .menu-hidden .time-wrapper {
-        gap: 3vh !important;
+    .time-wrapper {
+        gap: 2vh !important;
     }
-    .menu-hidden .digit {
-        width: 16vh !important;
-        height: 30vh !important;
+    
+    .digit {
+        width: 11vh;       /* 高さを基準に横幅を決定（画面全体の11%） */
+        height: 20vh;      /* 高さを画面全体の20%まで拡大 */
+        max-width: none;
+        max-height: none;
     }
-    .menu-hidden .digit-sec {
-        width: 12vh !important;
-        height: 22.5vh !important;
-        margin-bottom: 1.2vh !important;
+    
+    .digit-sec {
+        width: 8vh;
+        height: 15vh;
+        max-width: none;
+        max-height: none;
+        margin-bottom: 0.8vh;
     }
-    .menu-hidden .colon {
-        gap: 6vh !important;
-        width: 6vh !important;
-        height: 30vh !important; /* 横画面全画面時の数字の高さに完全同期 */
+    
+    .seg {
+        border-radius: 0.8vh !important;
     }
-    .menu-hidden .colon-dot {
-        width: 2.4vh !important;
-        height: 2.4vh !important;
+    
+    .seg.on {
+        box-shadow: 0 0 2.5vh var(--neon-color) !important;
     }
-
-    /* 横向き全画面時のセグメント配置バランスの調整 */
-    .menu-hidden .digit .seg-a { left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
-    .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
-    .menu-hidden .digit .seg-b { top: 1.8vh !important; bottom: 16.5vh !important; width: 2.4vh !important; }
-    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit .seg-c { top: 16.5vh !important; bottom: 1.8vh !important; width: 2.4vh !important; }
-    .menu-hidden .digit-sec .seg-c { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit .seg-d { left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
-    .menu-hidden .digit-sec .seg-d { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
-    .menu-hidden .digit .seg-e { top: 16.5vh !important; bottom: 1.8vh !important; width: 2.4vh !important; }
-    .menu-hidden .digit-sec .seg-e { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit .seg-f { top: 1.8vh !important; bottom: 16.5vh !important; width: 2.4vh !important; }
-    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit .seg-g { top: 13.8vh !important; left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
-    .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
+    
+    /* 横向きセグメント配置（vh基準で再計算） */
+    .digit .seg-a { top: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit-sec .seg-a { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    
+    .digit .seg-b { top: 1.2vh !important; right: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    .digit-sec .seg-b { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    
+    .digit .seg-c { top: 11vh !important; right: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    .digit-sec .seg-c { top: 8.2vh !important; right: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    
+    .digit .seg-d { bottom: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit-sec .seg-d { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    
+    .digit .seg-e { top: 11vh !important; left: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    .digit-sec .seg-e { top: 8.2vh !important; left: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    
+    .digit .seg-f { top: 1.2vh !important; left: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    .digit-sec .seg-f { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    
+    .digit .seg-g { top: 9.2vh !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit-sec .seg-g { top: 6.9vh !important; left: 0.9vh !important; right: 0.9vh !important; height: 1.2vh !important; }
+    
+    /* 横向き用のコロン調整 */
+    .colon {
+        gap: 4vh !important;
+        width: 4vh !important;
+        height: 20vh !important;
+    }
+    
+    .colon-dot {
+        width: 1.6vh !important;
+        height: 1.6vh !important;
+    }
+    
+    .colon-dot.on {
+        box-shadow: 0 0 2.5vh var(--neon-color) !important;
+    }
 }
+
 
 /* ==========================================================================
    4. タイマー設定・情報パネル
