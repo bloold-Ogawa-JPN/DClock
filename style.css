@@ -197,72 +197,69 @@ body {
 }
 
 /* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
-/* 横向きフルスクリーン専用 */
+/* ============================
+   通常横向き（メニューあり）
+   ============================ */
 @media (orientation: landscape) {
+
     .time-wrapper {
         gap: 2vh !important;
     }
-    
+
     .digit {
-        width: 11vh;       /* 高さを基準に横幅を決定（画面全体の11%） */
-        height: 20vh;      /* 高さを画面全体の20%まで拡大 */
-        max-width: none;
-        max-height: none;
+        width: 11vh;
+        height: 20vh;
     }
-    
+
     .digit-sec {
         width: 8vh;
         height: 15vh;
-        max-width: none;
-        max-height: none;
         margin-bottom: 0.8vh;
     }
-    
-    .seg {
-        border-radius: 0.8vh !important;
-    }
-    
-    .seg.on {
-        box-shadow: 0 0 2.5vh var(--neon-color) !important;
-    }
-    
-    /* 横向きセグメント配置（vh基準で再計算） */
-    .digit .seg-a { top: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
-    .digit-sec .seg-a { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
-    
-    .digit .seg-b { top: 1.2vh !important; right: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
-    .digit-sec .seg-b { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
-    
-    .digit .seg-c { top: 11vh !important; right: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
-    .digit-sec .seg-c { top: 8.2vh !important; right: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
-    
-    .digit .seg-d { bottom: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
-    .digit-sec .seg-d { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
-    
-    .digit .seg-e { top: 11vh !important; left: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
-    .digit-sec .seg-e { top: 8.2vh !important; left: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
-    
-    .digit .seg-f { top: 1.2vh !important; left: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
-    .digit-sec .seg-f { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
-    
-    .digit .seg-g { top: 9.2vh !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
-    .digit-sec .seg-g { top: 6.9vh !important; left: 0.9vh !important; right: 0.9vh !important; height: 1.2vh !important; }
-    
-    /* 横向き用のコロン調整 */
+
     .colon {
-        gap: 4vh !important;
-        width: 4vh !important;
-        height: 20vh !important;
+        gap: 4vh;
+        width: 4vh;
+        height: 20vh;
     }
-    
-    .colon-dot {
-        width: 1.6vh !important;
-        height: 1.6vh !important;
+}
+/* ============================
+   横向きフルスクリーン（menu-hidden）
+   ============================ */
+@media (orientation: landscape) {
+
+    .menu-hidden .time-wrapper {
+        gap: 3vh !important;
     }
-    
-    .colon-dot.on {
-        box-shadow: 0 0 2.5vh var(--neon-color) !important;
+
+    .menu-hidden .digit {
+        width: 16vh !important;
+        height: 30vh !important;
     }
+
+    .menu-hidden .digit-sec {
+        width: 12vh !important;
+        height: 22.5vh !important;
+        margin-bottom: 1.2vh !important;
+    }
+
+    .menu-hidden .colon {
+        gap: 6vh !important;
+        width: 6vh !important;
+        height: 30vh !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    /* 秒のセグメント位置（22.5vh前提で補正） */
+    .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-c { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-d { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit-sec .seg-e { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
 }
 
 /* ==========================================================================
