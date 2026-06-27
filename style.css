@@ -202,7 +202,6 @@ body {
    ============================ */
 @media (orientation: landscape) {
 
-    /* 縦向きの vw 指定を完全に上書きする */
     .time-wrapper {
         gap: 2vh !important;
         align-items: flex-end !important;
@@ -237,7 +236,6 @@ body {
         height: 1.6vh !important;
     }
 }
-
 /* ============================
    横向きフルスクリーン（menu-hidden）
    ============================ */
