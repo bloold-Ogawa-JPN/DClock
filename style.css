@@ -197,6 +197,58 @@ body {
 }
 
 /* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
+
+/* ============================
+   横向きフルスクリーン（menu-hidden）
+   ============================ */
+@media (orientation: landscape) {
+
+    /* AM/PM を拡大 */
+    .menu-hidden .period-display {
+        font-size: 6.5vh !important;
+        margin-right: 2vh !important;
+        margin-top: 0 !important; /* 上揃えを解除して中央寄りに */
+        align-self: center !important;
+    }
+    /* カレンダー（日付）を拡大 */
+    .menu-hidden .date-display {
+        font-size: 6.5vh !important;
+        margin-bottom: 2vh !important;
+        letter-spacing: 0.3vh !important;
+    }
+    .menu-hidden .time-wrapper {
+        gap: 3vh !important;
+    }
+
+    .menu-hidden .digit {
+        width: 16vh !important;
+        height: 30vh !important;
+    }
+
+    .menu-hidden .digit-sec {
+        width: 12vh !important;
+        height: 22.5vh !important;
+        margin-bottom: 1.2vh !important;
+    }
+
+    .menu-hidden .colon {
+        gap: 6vh !important;
+        width: 6vh !important;
+        height: 30vh !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    /* 秒のセグメント位置（22.5vh前提で補正） */
+    .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-c { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-d { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit-sec .seg-e { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
+}
 /* ============================
    通常横向き（メニューあり）
    ============================ */
@@ -253,58 +305,6 @@ body {
     .digit-sec .seg-f { top: 0.9vh !important; left: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
     .digit-sec .seg-g { top: 6.9vh !important; left: 0.9vh !important; right: 0.9vh !important; height: 1.2vh !important; }
 }
-/* ============================
-   横向きフルスクリーン（menu-hidden）
-   ============================ */
-@media (orientation: landscape) {
-
-    /* AM/PM を拡大 */
-    .menu-hidden .period-display {
-        font-size: 6.5vh !important;
-        margin-right: 2vh !important;
-        margin-top: 0 !important; /* 上揃えを解除して中央寄りに */
-        align-self: center !important;
-    }
-    /* カレンダー（日付）を拡大 */
-    .menu-hidden .date-display {
-        font-size: 6.5vh !important;
-        margin-bottom: 2vh !important;
-        letter-spacing: 0.3vh !important;
-    }
-    .menu-hidden .time-wrapper {
-        gap: 3vh !important;
-    }
-
-    .menu-hidden .digit {
-        width: 16vh !important;
-        height: 30vh !important;
-    }
-
-    .menu-hidden .digit-sec {
-        width: 12vh !important;
-        height: 22.5vh !important;
-        margin-bottom: 1.2vh !important;
-    }
-
-    .menu-hidden .colon {
-        gap: 6vh !important;
-        width: 6vh !important;
-        height: 30vh !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
-
-    /* 秒のセグメント位置（22.5vh前提で補正） */
-    .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
-    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit-sec .seg-c { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit-sec .seg-d { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
-    .menu-hidden .digit-sec .seg-e { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
-}
-
 /* ==========================================================================
    4. タイマー設定・情報パネル
    ========================================================================== */
