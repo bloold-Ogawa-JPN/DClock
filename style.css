@@ -200,48 +200,47 @@ body {
 /* 横向きフルスクリーン専用 */
 @media (orientation: landscape) {
 
-    /* AM/PM を拡大 */
+    /* AM/PM */
     body.menu-hidden #period-display {
-        font-size: 6vw !important;
+        font-size: 9vh !important;   /* ← 高さ基準に変更 */
         margin-right: 2vw !important;
     }
 
-    /* 数字（digit）を拡大 */
+    /* デジタル数字（大） */
     body.menu-hidden .digit {
-        width: 14vw !important;
-        height: 14vw !important;
+        width: 12vh !important;      /* ← iPhone でも崩れない最適値 */
+        height: 12vh !important;
         max-width: none !important;
         max-height: none !important;
     }
 
-    /* 秒（digit-sec） */
+    /* 秒（小） */
     body.menu-hidden .digit-sec {
-        width: 6.5vh !important;
-        height: 6.5vh !important;
-        max-width: none !important;
-        max-height: none !important;
-        margin-bottom: 0.8vh !important;
+        width: 6vh !important;
+        height: 6vh !important;
+        margin-bottom: 0.5vh !important;
     }
 
     /* コロン */
     body.menu-hidden .colon {
-        gap: 3vh !important;
-        width: 3vh !important;
+        gap: 2.5vh !important;
+        width: 2.5vh !important;
         height: 12vh !important;
     }
 
     body.menu-hidden .colon-dot {
-        width: 1.2vh !important;
-        height: 1.2vh !important;
+        width: 1vh !important;
+        height: 1vh !important;
     }
 
-    /* 日付（カレンダー）も AM/PM と同じ大きさに */
+    /* 日付（カレンダー） */
     body.menu-hidden #date-el {
-        font-size: 5.5vw !important;
-        margin-bottom: 2vw !important;
-        letter-spacing: 0.2vw !important;
+        font-size: 9vh !important;   /* AM/PM と揃える */
+        margin-bottom: 1vh !important;
+        letter-spacing: 0.15vw !important;
     }
 }
+
 
 
 /* ==========================================================================
