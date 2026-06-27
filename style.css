@@ -208,16 +208,16 @@ body {
 
     /* 数字（digit）を拡大 */
     body.menu-hidden .digit {
-        width: 18vw !important;
-        height: 18vw !important;
+        width: 14vw !important;
+        height: 14vw !important;
         max-width: none !important;
         max-height: none !important;
     }
 
     /* 秒（digit-sec） */
     body.menu-hidden .digit-sec {
-        width: 8vh !important;
-        height: 15vh !important;
+        width: 6.5vh !important;
+        height: 6.5vh !important;
         max-width: none !important;
         max-height: none !important;
         margin-bottom: 0.8vh !important;
@@ -225,19 +225,19 @@ body {
 
     /* コロン */
     body.menu-hidden .colon {
-        gap: 4vh !important;
-        width: 4vh !important;
-        height: 18vh !important;
+        gap: 3vh !important;
+        width: 3vh !important;
+        height: 12vh !important;
     }
 
     body.menu-hidden .colon-dot {
-        width: 1.6vh !important;
-        height: 1.6vh !important;
+        width: 1.2vh !important;
+        height: 1.2vh !important;
     }
 
     /* 日付（カレンダー）も AM/PM と同じ大きさに */
     body.menu-hidden #date-el {
-        font-size: 6vw !important;
+        font-size: 5.5vw !important;
         margin-bottom: 2vw !important;
         letter-spacing: 0.2vw !important;
     }
