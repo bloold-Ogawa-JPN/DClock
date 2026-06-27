@@ -199,37 +199,42 @@ body {
 /* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
 /* 横向きフルスクリーン専用 */
 @media (orientation: landscape) {
+
     /* AM/PM */
     body.menu-hidden #period-display {
         font-size: 7vh !important;
         margin-right: 2vw !important;
     }
 
-    /* デジタル数字（大） */
+    /* デジタル数字（時・分） */
     body.menu-hidden .digit {
-        width: 11vh !important;   /* ← iPhone でも崩れない最大値 */
+        width: 11vh !important;
         height: 11vh !important;
         max-width: none !important;
         max-height: none !important;
     }
 
-    /* 秒（小） */
+    /* 秒（digit-sec） */
     body.menu-hidden .digit-sec {
-        width: 5vh !important;
-        height: 5vh !important;
-        margin-bottom: 0.5vh !important;
+        width: 5.5vh !important;   /* digit の半分の幅 */
+        height: 11vh !important;   /* ← digit と高さを揃えるのが重要 */
+        margin-bottom: 0 !important;
     }
 
-    /* コロン */
+    /* コロン（高さを digit と揃える） */
     body.menu-hidden .colon {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center !important;  /* ← 中央揃えの決め手 */
+        align-items: center !important;
+        height: 11vh !important;             /* ← digit と同じ高さに統一 */
+        width: 3vh !important;
         gap: 2vh !important;
-        width: 2vh !important;
-        height: 11vh !important;
     }
 
     body.menu-hidden .colon-dot {
-        width: 0.9vh !important;
-        height: 0.9vh !important;
+        width: 1vh !important;
+        height: 1vh !important;
     }
 
     /* 日付（カレンダー） */
