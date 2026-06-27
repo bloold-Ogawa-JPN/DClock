@@ -197,72 +197,71 @@ body {
 }
 
 /* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
+/* 横向きフルスクリーン専用（menu-hidden が付いたときだけ拡大） */
 @media (orientation: landscape) {
-    #period-display {
-        font-size: 6vw !important;   /* ← landscape では vw 基準が最適 */
+    body.menu-hidden #period-display {
+        font-size: 6vw !important;
         margin-right: 2vw !important;
     }
-   .time-wrapper {
+
+    body.menu-hidden .time-wrapper {
         gap: 2vh !important;
     }
-    .digit {
- /*       width: 11vh;       /* 高さを基準に横幅を決定（画面全体の11%） */
- /*       height: 20vh;      /* 高さを画面全体の20%まで拡大 */
-        width: 18vw !important;  /* 拡大 */
-        height: 18vw !important;  /* 拡大 */
+
+    body.menu-hidden .digit {
+        width: 18vw !important;
+        height: 18vw !important;
         max-width: none;
         max-height: none;
     }
-    .digit-sec {
-        width: 8vh;
-        height: 15vh;
+
+    body.menu-hidden .digit-sec {
+        width: 8vh !important;
+        height: 15vh !important;
         max-width: none;
         max-height: none;
-        margin-bottom: 0.8vh;
+        margin-bottom: 0.8vh !important;
     }
-    
-    .seg {
+
+    body.menu-hidden .seg {
         border-radius: 0.8vh !important;
-    }    
-    .seg.on {
+    }
+
+    body.menu-hidden .seg.on {
         box-shadow: 0 0 2.5vh var(--neon-color) !important;
     }
-    
-    /* 横向きセグメント配置（vh基準で再計算） */
-    .digit .seg-a { top: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
-    .digit-sec .seg-a { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
-    
-    .digit .seg-b { top: 1.2vh !important; right: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
-    .digit-sec .seg-b { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
-    
-    .digit .seg-c { top: 11vh !important; right: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
-    .digit-sec .seg-c { top: 8.2vh !important; right: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
-    
-    .digit .seg-d { bottom: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
-    .digit-sec .seg-d { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
-    
-    .digit .seg-e { top: 11vh !important; left: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
-    .digit-sec .seg-e { top: 8.2vh !important; left: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
-    
-    .digit .seg-f { top: 1.2vh !important; left: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
-    .digit-sec .seg-f { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
-    
-    .digit .seg-g { top: 9.2vh !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
-    .digit-sec .seg-g { top: 6.9vh !important; left: 0.9vh !important; right: 0.9vh !important; height: 1.2vh !important; }
-    
-    /* 横向き用のコロン調整 */
-    .colon {
+
+    /* セグメント配置（digit） */
+    body.menu-hidden .digit .seg-a { top: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    body.menu-hidden .digit .seg-b { top: 1.2vh !important; right: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    body.menu-hidden .digit .seg-c { top: 11vh !important; right: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    body.menu-hidden .digit .seg-d { bottom: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    body.menu-hidden .digit .seg-e { top: 11vh !important; left: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    body.menu-hidden .digit .seg-f { top: 1.2vh !important; left: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    body.menu-hidden .digit .seg-g { top: 9.2vh !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+
+    /* セグメント配置（digit-sec） */
+    body.menu-hidden .digit-sec .seg-a { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    body.menu-hidden .digit-sec .seg-b { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    body.menu-hidden .digit-sec .seg-c { top: 8.2vh !important; right: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    body.menu-hidden .digit-sec .seg-d { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    body.menu-hidden .digit-sec .seg-e { top: 8.2vh !important; left: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    body.menu-hidden .digit-sec .seg-f { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    body.menu-hidden .digit-sec .seg-g { top: 6.9vh !important; left: 0.9vh !important; right: 0.9vh !important; height: 1.2vh !important; }
+
+    /* コロン */
+    body.menu-hidden .colon {
         gap: 4vh !important;
         width: 4vh !important;
-/*        height: 20vh !important; */
-        height: 18vh !important;  //拡大
+        height: 18vh !important;
     }
-    .colon-dot {
+
+    body.menu-hidden .colon-dot {
         width: 1.6vh !important;
         height: 1.6vh !important;
     }
-    
-    .colon-dot.on {
+
+    body.menu-hidden .colon-dot.on {
         box-shadow: 0 0 2.5vh var(--neon-color) !important;
     }
 }
