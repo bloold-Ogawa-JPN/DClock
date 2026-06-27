@@ -199,50 +199,43 @@ body {
 /* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
 /* 横向きフルスクリーン専用 */
 @media (orientation: landscape) {
-
-    /* AM/PM */
-    body.menu-hidden #period-display {
-        font-size: 7vh !important;
-        margin-right: 2vw !important;
+    .menu-hidden .time-wrapper {
+        gap: 3vh !important;
+    }
+    .menu-hidden .digit {
+        width: 16vh !important;
+        height: 30vh !important;
+    }
+    .menu-hidden .digit-sec {
+        width: 12vh !important;
+        height: 22.5vh !important;
+        margin-bottom: 1.2vh !important;
+    }
+    .menu-hidden .colon {
+        gap: 6vh !important;
+        width: 6vh !important;
+        height: 30vh !important; /* 横画面全画面時の数字の高さに完全同期 */
+    }
+    .menu-hidden .colon-dot {
+        width: 2.4vh !important;
+        height: 2.4vh !important;
     }
 
-    /* デジタル数字（時・分） */
-    body.menu-hidden .digit {
-        width: 11vh !important;
-        height: 11vh !important;
-        max-width: none !important;
-        max-height: none !important;
-    }
-
-    /* 秒（digit-sec） */
-    body.menu-hidden .digit-sec {
-        width: 5.5vh !important;   /* digit の半分の幅 */
-        height: 11vh !important;   /* ← digit と高さを揃えるのが重要 */
-        margin-bottom: 0 !important;
-    }
-
-    /* コロン（高さを digit と揃える） */
-    body.menu-hidden .colon {
-        display: flex !important;
-        flex-direction: column;
-        justify-content: center !important;  /* ← 中央揃えの決め手 */
-        align-items: center !important;
-        height: 11vh !important;             /* ← digit と同じ高さに統一 */
-        width: 3vh !important;
-        gap: 2vh !important;
-    }
-
-    body.menu-hidden .colon-dot {
-        width: 1vh !important;
-        height: 1vh !important;
-    }
-
-    /* 日付（カレンダー） */
-    body.menu-hidden #date-el {
-        font-size: 7vh !important;
-        margin-bottom: 1vh !important;
-        letter-spacing: 0.15vw !important;
-    }
+    /* 横向き全画面時のセグメント配置バランスの調整 */
+    .menu-hidden .digit .seg-a { left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit .seg-b { top: 1.8vh !important; bottom: 16.5vh !important; width: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit .seg-c { top: 16.5vh !important; bottom: 1.8vh !important; width: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-c { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit .seg-d { left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-d { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit .seg-e { top: 16.5vh !important; bottom: 1.8vh !important; width: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-e { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit .seg-f { top: 1.8vh !important; bottom: 16.5vh !important; width: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit .seg-g { top: 13.8vh !important; left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
 }
 
 /* ==========================================================================
