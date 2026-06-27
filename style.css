@@ -198,13 +198,20 @@ body {
 
 /* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
 @media (orientation: landscape) {
-    .time-wrapper {
+    #period-display {
+        font-size: 6vw !important;   /* ← landscape では vw 基準が最適 */
+        margin-right: 2vw !important;
+    }
+   
+   .time-wrapper {
         gap: 2vh !important;
     }
     
     .digit {
-        width: 11vh;       /* 高さを基準に横幅を決定（画面全体の11%） */
-        height: 20vh;      /* 高さを画面全体の20%まで拡大 */
+ /*       width: 11vh;       /* 高さを基準に横幅を決定（画面全体の11%） */
+ /*       height: 20vh;      /* 高さを画面全体の20%まで拡大 */
+        width: 18vw !important;  /* 拡大 */
+        height: 18vw !important;  /* 拡大 */
         max-width: none;
         max-height: none;
     }
@@ -251,7 +258,8 @@ body {
     .colon {
         gap: 4vh !important;
         width: 4vh !important;
-        height: 20vh !important;
+/*        height: 20vh !important; */
+        height: 18vh !important;  //拡大
     }
     
     .colon-dot {
