@@ -277,7 +277,7 @@ body {
         justify-content: center !important;
         align-items: center !important;
     }
-
+/*
     /* 秒のセグメント位置（22.5vh前提で補正） */
     .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
     .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
@@ -286,6 +286,25 @@ body {
     .menu-hidden .digit-sec .seg-e { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
     .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
     .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
+*/
+   /* 20vh レイアウトに合わせたセグメント位置 */
+    .digit .seg-a { top: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit .seg-b { top: 1.2vh !important; right: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    .digit .seg-c { top: 11vh !important; right: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    .digit .seg-d { bottom: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit .seg-e { top: 11vh !important; left: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    .digit .seg-f { top: 1.2vh !important; left: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    .digit .seg-g { top: 9.2vh !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+
+    /* 秒（digit-sec）も20vh版に合わせる */
+    .digit-sec .seg-a { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    .digit-sec .seg-b { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    .digit-sec .seg-c { top: 8.2vh !important; right: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    .digit-sec .seg-d { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    .digit-sec .seg-e { top: 8.2vh !important; left: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    .digit-sec .seg-f { top: 0.9vh !important; left: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    .digit-sec .seg-g { top: 6.9vh !important; left: 0.9vh !important; right: 0.9vh !important; height: 1.2vh !important; }
+
 }
 
 /* ==========================================================================
