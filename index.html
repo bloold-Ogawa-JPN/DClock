@@ -151,16 +151,6 @@
 
     <!-- 外部JavaScriptの読み込み -->
     <script src="script.js"></script>
-    <!-- アドレスバー自動スクロール押し出し処理 -->
-    <script>
-        function hideAddressBar() {
-            setTimeout(function() {
-                window.scrollTo(0, 1);
-            }, 100);
-        }
-        window.addEventListener("load", hideAddressBar);
-        window.addEventListener("orientationchange", hideAddressBar);
-    </script>
     <!-- 自動消灯防止（Wake Lock）追加ロジック -->
     <script>
         let wakeLock = null;
