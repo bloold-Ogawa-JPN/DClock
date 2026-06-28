@@ -404,6 +404,13 @@ function toggleFullscreen() {
 
 /* --- 次回起動時の自動読み込み（初期化） --- */
 window.addEventListener('DOMContentLoaded', () => {
+   function updateVh() {
+       document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+   }
+   updateVh();
+   window.addEventListener('resize', updateVh);
+
+    
     // 1. 時間表示形式 (12h / 24h)
     const savedFormat = localStorage.getItem('clockFormat') || '24h';
     changeFormat(savedFormat);
