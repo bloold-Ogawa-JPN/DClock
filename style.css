@@ -222,20 +222,20 @@ body {
     }
 
     .menu-hidden .digit {
-        width: 18vh !important;
-        height: 32vh !important;
+        width: 20vh !important;
+        height: 34vh !important;
     }
 
     .menu-hidden .digit-sec {
-        width: 13.5vh !important;
-        height: 24vh !important;
+        width: 15vh !important;
+        height: 27vh !important;
         margin-bottom: 1.5vh !important;
     }
 
     .menu-hidden .colon {
-        gap: 7vh !important;
-        width: 7vh !important;
-        height: 32vh !important;
+        gap: 7.5vh !important;
+        width: 7.5vh !important;
+        height: 34vh !important;
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
@@ -243,11 +243,11 @@ body {
 
     /* 秒のセグメント位置（22.5vh前提で補正） */
     .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
-    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 18vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit-sec .seg-c { top: 18vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 19vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-c { top: 19vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
     .menu-hidden .digit-sec .seg-d { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
-    .menu-hidden .digit-sec .seg-e { top: 18vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
-    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 18vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-e { top: 19vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 19vh !important; width: 1.8vh !important; }
     .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
 }
 /* ============================
