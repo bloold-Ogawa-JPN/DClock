@@ -70,7 +70,7 @@ function triggerChime(currentSecond) {
         } else if (currentSecond === 0) {
             playTone(1760, 'sine', 0.1);
             setTimeout(() => playTone(1760, 'sine', 0.1), 150);
-            setTimeout(() => playTone(1760, 'sine', 0.1), 300);
+            setTimeout(() => playTone(1800, 'sine', 0.1), 300);
         }
     } else if (chimeSelect === 'bell') {
         // --- 鐘の音（57, 58, 59秒でコン、00秒で大きなカーン） ---
@@ -88,7 +88,7 @@ function triggerChime(currentSecond) {
             playTone(2000, 'square', 0.05);
             setTimeout(() => playTone(2000, 'square', 0.05), 100);
             setTimeout(() => playTone(2000, 'square', 0.05), 200);
-            setTimeout(() => playTone(1900, 'square', 0.15), 300);
+            setTimeout(() => playTone(2000, 'square', 0.15), 300);
         }
     }
 }
@@ -96,6 +96,7 @@ function triggerChime(currentSecond) {
 
 // アラーム音（タイマー終了時）
 function triggerAlarm() {
+    initAudio(); // ★これを追加（最重要）
     let count = 0;
     const alarmLoop = setInterval(() => {
         playTone(2500, 'square', 0.1);
