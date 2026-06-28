@@ -35,7 +35,7 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    min-height: 100vh;
+    min-height: calc(var(--vh) * 100);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
