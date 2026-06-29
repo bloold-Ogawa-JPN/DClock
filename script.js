@@ -65,20 +65,18 @@ function triggerChime(currentSecond) {
     initAudio();
     if (chimeSelect === 'electronic') {
         // --- 電子音（57, 58, 59秒で低いピ、00秒で高いピピピ） ---
-        if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
-            playTone(880, 'sine', 0.1);
-        } else if (currentSecond === 0) {
-            playTone(1760, 'sine', 0.1);
-            setTimeout(() => playTone(1760, 'sine', 0.1), 150);
-            setTimeout(() => playTone(1800, 'sine', 0.1), 300);
+        if (chimeSelect === 'electronic') {
+            if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
+                playTone(880, 'sine', 0.12);   // ポン
+            } else if (currentSecond === 0) {
+                playTone(1760, 'sine', 0.35);  // ポ〜ン！
+            }
         }
-    } else if (chimeSelect === 'bell') {
-        // --- 鐘の音（57, 58, 59秒でコン、00秒で大きなカーン） ---
+    }else if (chimeSelect === 'bell') {
         if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
-            playTone(660, 'triangle', 0.3);
+            playTone(660, 'triangle', 0.20);   // コン
         } else if (currentSecond === 0) {
-            playTone(440, 'triangle', 2.0);
-            setTimeout(() => playTone(554.37, 'triangle', 1.5), 150);
+            playTone(880, 'triangle', 0.45);   // コ〜ン！
         }
     } else if (chimeSelect === 'pipipip') {
 // --- 時報サービス風（ポン、ポン、ポ〜ン！） ---
