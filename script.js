@@ -38,8 +38,9 @@ function initAudio() {
     }
 }
 
-function playTone(freq, type, duration) {
+async function playTone(freq, type, duration) {
     initAudio();
+    await audioCtx.resume(); 
     if (!audioCtx) return;
 
     const osc = audioCtx.createOscillator();
@@ -48,9 +49,11 @@ function playTone(freq, type, duration) {
     osc.type = type;
     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
     
-    // iOSアプリで爆音にならないよう音量を0.2に最適化
     gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+    gainNode.gain.exponentialRampToValueAtTime(
+        0.00001,
+        audioCtx.currentTime + duration
+    );
     
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
