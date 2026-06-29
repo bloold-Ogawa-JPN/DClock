@@ -60,11 +60,11 @@ function playTone(freq, type, duration) {
 }
 
 // 時報音（引数で現在の秒数を受け取り、リアルタイムに音を出し分け）
+// --- 時報サービス風（ポン、ポン、ポ〜ン！） ---
 function triggerChime(currentSecond) {
     const chimeSelect = document.getElementById('chime-sound-select').value;
     initAudio();
     if (chimeSelect === 'electronic') {
-        // --- 電子音（57, 58, 59秒で低いピ、00秒で高いピピピ） ---
         if (chimeSelect === 'electronic') {
             if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
                 playTone(880, 'sine', 0.12);   // ポン
@@ -79,7 +79,6 @@ function triggerChime(currentSecond) {
             playTone(880, 'triangle', 0.45);   // コ〜ン！
         }
     } else if (chimeSelect === 'pipipip') {
-// --- 時報サービス風（ポン、ポン、ポ〜ン！） ---
         if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
             playTone(1500, 'square', 0.12);   // ★低めのポン
         } else if (currentSecond === 0) {
