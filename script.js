@@ -62,7 +62,7 @@ function playTone(freq, type, duration) {
 // 時報音（引数で現在の秒数を受け取り、リアルタイムに音を出し分け）
 function triggerChime(currentSecond) {
     const chimeSelect = document.getElementById('chime-sound-select').value;
-    
+    initAudio();
     if (chimeSelect === 'electronic') {
         // --- 電子音（57, 58, 59秒で低いピ、00秒で高いピピピ） ---
         if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
