@@ -81,14 +81,11 @@ function triggerChime(currentSecond) {
             setTimeout(() => playTone(554.37, 'triangle', 1.5), 150);
         }
     } else if (chimeSelect === 'pipipip') {
-        // --- レトロ（57, 58, 59秒で短いピ、00秒で長めのピピピピッ） ---
+// --- 時報サービス風（ポン、ポン、ポ〜ン！） ---
         if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
-            playTone(2000, 'square', 0.03);
+            playTone(1500, 'square', 0.12);   // ★低めのポン
         } else if (currentSecond === 0) {
-            playTone(2800, 'square', 0.05);
-            setTimeout(() => playTone(2800, 'square', 0.05), 100);
-            setTimeout(() => playTone(2800, 'square', 0.05), 200);
-            setTimeout(() => playTone(2600, 'square', 0.15), 300);
+            playTone(2200, 'square', 0.35);   // ★高くて長いポ〜ン！
         }
     }
 }
