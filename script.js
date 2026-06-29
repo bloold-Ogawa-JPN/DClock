@@ -85,10 +85,10 @@ function triggerChime(currentSecond) {
         if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
             playTone(2000, 'square', 0.03);
         } else if (currentSecond === 0) {
-            playTone(2000, 'square', 0.05);
-            setTimeout(() => playTone(2000, 'square', 0.05), 100);
-            setTimeout(() => playTone(2000, 'square', 0.05), 200);
-            setTimeout(() => playTone(2000, 'square', 0.15), 300);
+            playTone(2800, 'square', 0.05);
+            setTimeout(() => playTone(2800, 'square', 0.05), 100);
+            setTimeout(() => playTone(2800, 'square', 0.05), 200);
+            setTimeout(() => playTone(2600, 'square', 0.15), 300);
         }
     }
 }
