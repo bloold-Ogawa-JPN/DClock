@@ -64,31 +64,31 @@ async function playTone(freq, type, duration) {
 
 // 時報音（引数で現在の秒数を受け取り、リアルタイムに音を出し分け）
 // --- 時報サービス風（ポン、ポン、ポ〜ン！） ---
-function triggerChime(currentSecond) {
+async function triggerChime(currentSecond) {
     const chimeSelect = document.getElementById('chime-sound-select').value;
     initAudio();
+
     if (chimeSelect === 'electronic') {
-        if (chimeSelect === 'electronic') {
-            if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
-                playTone(880, 'sine', 0.12);   // ポン
-            } else if (currentSecond === 0) {
-                playTone(1760, 'sine', 0.35);  // ポ〜ン！
-            }
-        }
-    }else if (chimeSelect === 'bell') {
         if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
-            playTone(660, 'triangle', 0.20);   // コン
+            await playTone(880, 'sine', 0.12);
         } else if (currentSecond === 0) {
-            playTone(880, 'triangle', 0.45);   // コ〜ン！
+            await playTone(1760, 'sine', 0.35);
+        }
+    } else if (chimeSelect === 'bell') {
+        if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
+            await playTone(660, 'triangle', 0.20);
+        } else if (currentSecond === 0) {
+            await playTone(880, 'triangle', 0.45);
         }
     } else if (chimeSelect === 'pipipip') {
         if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
-            playTone(1500, 'square', 0.12);   // ★低めのポン
+            await playTone(1500, 'square', 0.12);
         } else if (currentSecond === 0) {
-            playTone(2200, 'square', 0.35);   // ★高くて長いポ〜ン！
+            await playTone(2200, 'square', 0.35);
         }
     }
 }
+
 
 
 // アラーム音（タイマー終了時）
