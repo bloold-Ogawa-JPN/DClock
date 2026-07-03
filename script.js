@@ -195,6 +195,26 @@ async function activateWakeLock() {
         console.error('Wake Lock エラー:', err);
     }
 }
+// --- 時間表記切り替え (12H / 24H) ---
+function changeFormat(format) {
+    timeFormat = format;
+    localStorage.setItem('clockFormat', format);
+
+    const btn12 = document.getElementById('btn-12h');
+    const btn24 = document.getElementById('btn-24h');
+
+    if (btn12 && btn24) {
+        if (format === '12h') {
+            btn12.classList.add('active');
+            btn24.classList.remove('active');
+        } else {
+            btn12.classList.remove('active');
+            btn24.classList.add('active');
+        }
+    }
+
+    updateDisplay();
+}
 
 // --- タイマー ---
 function startTimer() {
