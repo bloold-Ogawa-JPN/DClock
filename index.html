@@ -62,4 +62,100 @@
 
             <!-- 分 -->
             <div class="digit" id="m1">
-                <div class="seg seg-a">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+            <div class="digit" id="m2">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+
+            <!-- コロン -->
+            <div class="colon">
+                <div class="colon-dot"></div>
+                <div class="colon-dot"></div>
+            </div>
+
+            <!-- 秒 -->
+            <div class="digit digit-sec" id="s1">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+            <div class="digit digit-sec" id="s2">
+                <div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div>
+                <div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div>
+                <div class="seg seg-g"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- タイマー設定パネル -->
+    <div class="feature-panel" id="timer-panel">
+        <p class="panel-title">TIMER CONTROL</p>
+
+        <div class="panel-row" id="timer-setup">
+            <input type="number" id="timer-hours" min="0" max="23" value="0">
+            <span>:</span>
+            <input type="number" id="timer-minutes" min="0" max="59" value="3">
+            <span>:</span>
+            <input type="number" id="timer-seconds" min="0" max="59" value="0">
+            <button class="action-btn" onclick="startTimer()">Start</button>
+        </div>
+
+        <div class="countdown-row" id="countdown-display">
+            <span class="status-text" id="timer-status">Remaining...</span>
+            <button class="cancel-btn" onclick="stopTimer()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ボトムメニュー -->
+    <div class="controls-container">
+
+        <div class="controls-row flex-wrap justify-center gap-2">
+            <div class="btn-group">
+                <button id="btn-12h" onclick="changeFormat('12h')">12H</button>
+                <button id="btn-24h" class="active" onclick="changeFormat('24h')">24H</button>
+            </div>
+
+            <div class="dropdown-wrapper">
+                <input type="checkbox" id="chime-toggle" checked>
+                <label for="chime-toggle" class="dropdown-label">時報</label>
+                <select id="chime-sound-select">
+                    <option value="electronic">電子音</option>
+                    <option value="bell">鐘の音</option>
+                    <option value="pipipip">レトロ</option>
+                </select>
+            </div>
+
+            <div class="dropdown-wrapper">
+                <input type="checkbox" id="alarm-toggle" checked>
+                <label for="alarm-toggle" class="dropdown-label">タイマー音</label>
+            </div>
+        </div>
+
+        <div class="controls-row flex-wrap justify-center gap-2">
+            <button id="theme-toggle-btn" onclick="toggleTheme()">Light</button>
+            <button id="timer-toggle-btn" onclick="toggleTimerPanel()">Timer</button>
+
+            <div class="color-picker-wrapper">
+                <label class="dropdown-label">Color:</label>
+                <input type="color" id="color-picker" value="#ff9500" oninput="changeColor(this.value)">
+            </div>
+
+            <div class="brightness-wrapper">
+                <label class="dropdown-label">Bright:</label>
+                <input type="range" id="brightness" min="0.2" max="1" step="0.1" value="1"
+                       oninput="changeBrightness(this.value)">
+            </div>
+        </div>
+    </div>
+
+    <!-- script.js のみ読み込む（衝突防止） -->
+    <script src="script.js"></script>
+
+</body>
+</html>
