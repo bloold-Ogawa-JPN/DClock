@@ -197,7 +197,6 @@
                 if (guide) guide.innerText = "画面をタップして全画面・常時ON表示";
             }
         }
-
         // アプリがバックグラウンドに引っ込んで戻ってきたときに自動再取得する処理
         document.addEventListener('visibilitychange', async () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
