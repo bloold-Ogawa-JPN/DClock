@@ -380,10 +380,14 @@ function changeBrightness(brightnessValue) {
 }
 
 // 画面をタップした際の挙動（メニュー非表示に合わせて文字を巨大化）
-function toggleFullscreen() {
+async function toggleFullscreen() {
     initAudio(); 
 /*    requestWakeLock(); */
     activateWakeLock(); // ← requestWakeLock() ではなく activateWakeLock()
+        // ★ 初回タップで音声権限を解禁
+    if (!window.userAudioActivated) {
+        await userActivated();
+    }
     // ボトムメニューの表示切り替え
     const controls = document.querySelector('.controls-container');
     if (controls) {
@@ -398,7 +402,10 @@ function toggleFullscreen() {
         }
     }
 }
-
+async function userActivated() {
+    await playTone(1000, 'sine', 0.05); // ★Safariが確実に音声解禁する
+    window.userAudioActivated = true;
+}
 
 /* --- 次回起動時の自動読み込み（初期化） --- */
 window.addEventListener('DOMContentLoaded', () => {
