@@ -534,4 +534,11 @@ input[type="range"] {
     .time-wrapper {
         align-items: center !important; /* ← これを追加 */
     }
+    /* ★縦向きは align-self をリセット */
+    .digit-sec,
+    .period-display {
+        align-self: center !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
 }
