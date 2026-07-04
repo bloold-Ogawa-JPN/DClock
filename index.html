@@ -87,7 +87,7 @@
             </div>
         </div>
 
-//     <!--   <div class="guide-text">画面タップ：メニューの表示切替 / 初回タップで常時点灯が開始します</div> -->
+     <!--   <div class="guide-text">画面タップ：メニューの表示切替 / 初回タップで常時点灯が開始します</div> -->
     </div>
 
     <!-- タイマー設定・情報パネル -->
@@ -188,13 +188,8 @@
             // タップされるたびに有効化（すでに有効ならスキップ）する安全設計にしています
             if (wakeLock === null) {
                 await activateWakeLock();
-                // ガイドテキストを書き換え
- //               const guide = document.getElementById('fullscreen-guide');
- //               if (guide) guide.innerText = "画面をタップして解除 (常時ON稼働中)";
             } else {
                 deactivateWakeLock();
- //               const guide = document.getElementById('fullscreen-guide');
- //               if (guide) guide.innerText = "画面をタップして全画面・常時ON表示";
             }
         }
         // アプリがバックグラウンドに引っ込んで戻ってきたときに自動再取得する処理
