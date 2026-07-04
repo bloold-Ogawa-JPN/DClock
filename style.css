@@ -1,23 +1,26 @@
-/* ==========================================================================  
-   1. 基本設定・テーマ変数  
+/* ==========================================================================
+   1. 基本設定・テーマ変数
    ========================================================================== */
 :root {
     --vh: 1vh;
+    /* JavaScriptのカラーピッカーと連動する変数（未設定時の初期値：オレンジ） */
     --neon-color: #ff9500;
-
+    
+    /* ダークテーマ（デフォルト）の配色 */
     --bg-color: #0c0c0c;
     --panel-bg: #1c1c1e;
     --input-bg: #2c2c2e;
     --text-color: #ffffff;
-    --seg-off-color: #1a1a1a;
+    --seg-off-color: #1a1a1a; /* ★追加：暗い背景に馴染む深いグレー */
 }
 
+/* ライトテーマ切り替え時の配色（HTMLの data-color-mode="light" と連動） */
 [data-color-mode="light"] {
     --bg-color: #f2f2f7;
     --panel-bg: #ffffff;
     --input-bg: #e5e5ea;
     --text-color: #000000;
-    --seg-off-color: #e5e5ea;
+    --seg-off-color: #e5e5ea; /* ★追加：背景に馴染む薄いグレー（--input-bgと同じ） */
 }
 
 * {
@@ -42,8 +45,8 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* ==========================================================================  
-   2. 時計表示エリア  
+/* ==========================================================================
+   2. 時計表示エリア（レイアウト）
    ========================================================================== */
 .clock-container {
     flex: 1;
@@ -54,41 +57,45 @@ body {
     width: 100%;
     max-width: 800px;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s; /* 明るさ調整用 */
 }
 
+/* 日付表示 */
 .date-display {
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 20px;
     letter-spacing: 2px;
-    color: var(--neon-color) !important;
+    color: var(--neon-color) !important; /* カラーピッカーと連動 */
     transition: color 0.2s;
 }
 
+/* 液晶全体を囲むラッパー：縦画面で絶対にズレないように中央寄せ・下ライン揃えを徹底強化 */
 .time-wrapper {
     display: flex !important;
-    align-items: flex-end !important;
+    align-items: flex-end !important; /* 時・分・秒の下ラインを綺麗に揃える */
     justify-content: center !important;
     width: 100% !important;
     max-width: 100vw !important;
-    gap: 0.8vw !important;
+    gap: 0.8vw !important; /* 画面幅をベースにした正確な隙間計算 */
     padding: 20px 0 !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
 }
 
+/* AMPM表示：位置を時間表示の上端に揃え、色を連動 */
 .period-display {
     font-size: 1.2rem;
     font-weight: bold;
-    align-self: flex-start;
-    margin-top: 6px;
+    align-self: flex-start; /* 上端揃えに設定 */
+    margin-top: 6px;       /* 7セグメントの上端と綺麗に重なるよう微調整 */
     margin-right: 5px;
-    color: var(--neon-color) !important;
+    color: var(--neon-color) !important; /* カラーピッカーと連動 */
     font-family: monospace;
     transition: color 0.2s;
 }
 
+/* ガイドテキスト */
 .guide-text {
     font-size: 0.85rem;
     color: #8e8e93;
@@ -96,70 +103,82 @@ body {
     text-align: center;
 }
 
-/* ==========================================================================  
-   3. 7セグメント液晶  
+/* ==========================================================================
+   3. 7セグメント液晶ディスプレイ（デジタル数字）の描画
    ========================================================================== */
+
+/* --- 📱 【基本】スマホ縦向き時のサイズ（横幅 vw 基準） --- */
 .digit {
     position: relative;
     width: 7.5vw;
-    height: 15vw;
+    height: 15vw; /* 高さを潰さない比率にして衝突を防ぐ */
     max-width: 60px;
     max-height: 120px;
     display: inline-block;
 }
 
+/* 秒用の桁は少し小さくする */
 .digit-sec {
     width: 5.6vw;
     height: 11.2vw;
     max-width: 45px;
     max-height: 90px;
-    align-self: flex-end;
+    align-self: flex-end; /* 秒は下側に揃える */
     margin-bottom: 0.6vw;
     display: inline-block;
 }
 
+/* 各セグメント（液晶の棒）の共通設定 */
 .seg {
     position: absolute !important;
-    background-color: var(--seg-off-color) !important;
+    /* background-color: #111111 !important; /* 消灯時は外部CSSに負けない暗いグレーで直接固定 */
+    background-color: var(--seg-off-color) !important; 
     border-radius: 0.5vw !important;
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
+/* 液晶が点灯（ON）した時の色：最優先でカラーピッカーと完全連動 */
 .seg.on {
     background-color: var(--neon-color) !important;
-    box-shadow: 0 0 1.5vw var(--neon-color) !important;
+    box-shadow: 0 0 1.5vw var(--neon-color) !important; /* ネオン風の発光エフェクト */
 }
+/* --- セグメントの位置計算（上下が重なり合ってはみ出ないよう比率を調整） --- */
+/* A（上・横棒） */
+.digit .seg-a { top: 0 !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
+.digit-sec .seg-a { height: 0.75vw !important; left: 0.6vw !important; right: 0.6vw !important; }
 
-/* セグメント位置（通常） */
-.digit .seg-a { top: 0; left: 0.75vw; right: 0.75vw; height: 1vw; }
-.digit-sec .seg-a { height: 0.75vw; left: 0.6vw; right: 0.6vw; }
+/* B（右上・縦棒）：引き伸ばし制限（bottom）を調整し中央のG棒との衝突を防ぐ */
+.digit .seg-b { top: 0.75vw !important; right: 0 !important; bottom: 7.8vw !important; width: 1vw !important; }
+.digit-sec .seg-b { top: 0.6vw !important; right: 0 !important; bottom: 5.8vw !important; width: 0.75vw !important; }
 
-.digit .seg-b { top: 0.75vw; right: 0; bottom: 7.8vw; width: 1vw; }
-.digit-sec .seg-b { top: 0.6vw; right: 0; bottom: 5.8vw; width: 0.75vw; }
+/* C（右下・縦棒）：上端の開始位置（top）を調整 */
+.digit .seg-c { top: 7.8vw !important; right: 0 !important; bottom: 0.75vw !important; width: 1vw !important; }
+.digit-sec .seg-c { top: 5.8vw !important; right: 0 !important; bottom: 0.6vw !important; width: 0.75vw !important; }
 
-.digit .seg-c { top: 7.8vw; right: 0; bottom: 0.75vw; width: 1vw; }
-.digit-sec .seg-c { top: 5.8vw; right: 0; bottom: 0.6vw; width: 0.75vw; }
+/* D（下・横棒） */
+.digit .seg-d { bottom: 0 !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
+.digit-sec .seg-d { height: 0.75vw !important; left: 0.6vw !important; right: 0.6vw !important; }
 
-.digit .seg-d { bottom: 0; left: 0.75vw; right: 0.75vw; height: 1vw; }
-.digit-sec .seg-d { height: 0.75vw; left: 0.6vw; right: 0.6vw; }
+/* E（左下・縦棒） */
+.digit .seg-e { top: 7.8vw !important; left: 0 !important; bottom: 0.75vw !important; width: 1vw !important; }
+.digit-sec .seg-e { top: 5.8vw !important; left: 0 !important; bottom: 0.6vw !important; width: 0.75vw !important; }
 
-.digit .seg-e { top: 7.8vw; left: 0; bottom: 0.75vw; width: 1vw; }
-.digit-sec .seg-e { top: 5.8vw; left: 0; bottom: 0.6vw; width: 0.75vw; }
+/* F（左上・縦棒） */
+.digit .seg-f { top: 0.75vw !important; left: 0 !important; bottom: 7.8vw !important; width: 1vw !important; }
+.digit-sec .seg-f { top: 0.6vw !important; right: 0 !important; bottom: 5.8vw !important; width: 0.75vw !important; }
 
-.digit .seg-f { top: 0.75vw; left: 0; bottom: 7.8vw; width: 1vw; }
-.digit-sec .seg-f { top: 0.6vw; left: 0; bottom: 5.8vw; width: 0.75vw; }
+/* G（中央・横棒）：上下の縦棒の隙間にピタッと収める */
+.digit .seg-g { top: 7vw !important; left: 0.75vw !important; right: 0.75vw !important; height: 1vw !important; }
+.digit-sec .seg-g { top: 5.2vw !important; left: 0.6vw !important; right: 0.6vw !important; height: 0.75vw !important; }
 
-.digit .seg-g { top: 7vw; left: 0.75vw; right: 0.75vw; height: 1vw; }
-.digit-sec .seg-g { top: 5.2vw; left: 0.6vw; right: 0.6vw; height: 0.75vw; }
-
-/* コロン */
+/* --- コロン（：）の描画と色連動（縦画面のサイズズレ・高さを修正） --- */
 .colon {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    gap: 2vw !important;
+    gap: 2vw !important; /* ２つの点の間隔を最適化 */
     width: 2.5vw !important;
-    height: 100% !important;
+    height: 100% !important; /* ★固定の15vwから「100%」に変更し、数字の枠内に強制的に収めます */
     align-items: center !important;
 }
 
@@ -167,225 +186,77 @@ body {
     width: 1vw !important;
     height: 1vw !important;
     border-radius: 50% !important;
-    background-color: var(--seg-off-color) !important;
+    /* background-color: #111111 !important; /* 消灯時は直接暗い色に固定 */
+    background-color: var(--seg-off-color) !important; 
     transition: background-color 0.1s, box-shadow 0.1s;
 }
 
+/* コロンが点灯（ON）した時の色：最優先で連動 */
 .colon-dot.on {
     background-color: var(--neon-color) !important;
     box-shadow: 0 0 1.5vw var(--neon-color) !important;
 }
 
-/* ==========================================================================  
-   4. タイマー設定パネル  
-   ========================================================================== */
-.feature-panel {
-    display: none;
-    flex-direction: column;
-    background-color: var(--panel-bg);
-    border-radius: 12px;
-    padding: 15px;
-    width: 100%;
-    max-width: 400px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
+/* --- 🔄 📱 【横向き限定】スマホ横向き時のサイズ（高さ vh 基準で巨大化） --- */
 
-.panel-title {
-    font-size: 0.75rem;
-    color: #8e8e93;
-    font-weight: bold;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-}
-
-.panel-row, .countdown-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.countdown-row {
-    display: none;
-}
-
-.feature-panel input[type="number"] {
-    width: 60px;
-    background-color: var(--input-bg);
-    border: none;
-    color: var(--text-color);
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 16px;
-    text-align: center;
-}
-
-/* ==========================================================================  
-   5. iPhone最適化コントロールメニュー  
-   ========================================================================== */
-.controls-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background-color: var(--panel-bg);
-    width: 100%;
-    max-width: 500px;
-    padding: 16px;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-}
-
-.controls-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-button {
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s, opacity 0.1s;
-}
-
-button:active {
-    opacity: 0.7;
-}
-
-button.active {
-    background-color: #007aff;
-    color: #ffffff;
-}
-
-.btn-group {
-    display: flex;
-    background-color: var(--input-bg);
-    border-radius: 8px;
-    padding: 2px;
-}
-
-.btn-group button {
-    background-color: transparent;
-    padding: 8px 14px;
-    border-radius: 6px;
-}
-
-.btn-group button.active {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.dropdown-wrapper, .color-picker-wrapper, .brightness-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background-color: var(--input-bg);
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-}
-
-.dropdown-label {
-    font-weight: 600;
-}
-
-select {
-    background-color: transparent;
-    color: var(--text-color);
-    border: none;
-    font-size: 0.9rem;
-    outline: none;
-    cursor: pointer;
-}
-
-input[type="color"] {
-    -webkit-appearance: none;
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    background: transparent;
-}
-
-input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-input[type="color"]::-webkit-color-swatch {
-    border: 1px solid rgba(0,0,0,0.2);
-    border-radius: 50%;
-}
-
-input[type="range"] {
-    width: 70px;
-    cursor: pointer;
-}
-
-.flex-wrap { flex-wrap: wrap; }
-.justify-center { justify-content: center; }
-.gap-2 { gap: 8px; }
-
-/* ==========================================================================  
-   6. menu-hidden（縦向き全画面）  
-   ========================================================================== */
-.menu-hidden .digit {
-    width: 9vw !important;
-    height: 18vw !important;
-}
-
-.menu-hidden .digit-sec {
-    width: 6.7vw !important;
-    height: 13.44vw !important; /* ★ 1.2倍に正規化 */
-    margin-bottom: 0.7vw !important;
-}
-
-.menu-hidden .colon {
-    gap: 2.4vw !important;
-    width: 3vw !important;
-    height: 18vw !important;
-}
-
-.menu-hidden .colon-dot {
-    width: 1.2vw !important;
-    height: 1.2vw !important;
-}
-
-/* セグメント位置（縦向き menu-hidden） */
-.menu-hidden .digit .seg-a { top: 0; left: 0.9vw; right: 0.9vw; height: 1.2vw; }
-.menu-hidden .digit-sec .seg-a { height: 0.9vw; left: 0.72vw; right: 0.72vw; }
-
-.menu-hidden .digit .seg-b { top: 0.9vw; right: 0; bottom: 9.36vw; width: 1.2vw; }
-.menu-hidden .digit-sec .seg-b { top: 0.72vw; right: 0; bottom: 6.96vw; width: 0.9vw; }
-
-.menu-hidden .digit .seg-c { top: 9.36vw; right: 0; bottom: 0.9vw; width: 1.2vw; }
-.menu-hidden .digit-sec .seg-c { top: 6.96vw; right: 0; bottom: 0.72vw; width: 0.9vw; }
-
-.menu-hidden .digit .seg-d { bottom: 0; left: 0.9vw; right: 0.9vw; height: 1.2vw; }
-.menu-hidden .digit-sec .seg-d { height: 0.9vw; left: 0.72vw; right: 0.72vw; }
-
-.menu-hidden .digit .seg-e { top: 9.36vw; left: 0; bottom: 0.9vw; width: 1.2vw; }
-.menu-hidden .digit-sec .seg-e { top: 6.96vw; left: 0; bottom: 0.72vw; width: 0.9vw; }
-
-.menu-hidden .digit .seg-f { top: 0.9vw; left: 0; bottom: 9.36vw; width: 1.2vw; }
-.menu-hidden .digit-sec .seg-f { top: 0.72vw; left: 0; bottom: 6.96vw; width: 0.9vw; }
-
-.menu-hidden .digit .seg-g { top: 8.4vw; left: 0.9vw; right: 0.9vw; height: 1.2vw; }
-.menu-hidden .digit-sec .seg-g { top: 6.24vw; left: 0.72vw; right: 0.72vw; height: 0.9vw; }
-
-/* ==========================================================================  
-   7. 通常横向き（メニューあり）  
-   ========================================================================== */
+/* ============================
+   横向き共通
+   ============================ */
 @media (orientation: landscape) {
 
+    /* ============================
+       横向きフルスクリーン（menu-hidden）
+       ============================ */
+    .menu-hidden .period-display {
+        font-size: 8vh !important;
+        margin-right: 2vh !important;
+        margin-top: 0 !important;
+        align-self: center !important;
+    }
+
+    .menu-hidden .date-display {
+        font-size: 12vh !important;
+        margin-bottom: 3vh !important;
+        letter-spacing: 0.5vh !important;
+    }
+
+    .menu-hidden .time-wrapper {
+        gap: 3vh !important;
+    }
+
+    .menu-hidden .digit {
+        width: 20vh !important;
+        height: 34vh !important;
+    }
+
+    .menu-hidden .digit-sec {
+        width: 15vh !important;
+        height: 27vh !important;
+        margin-bottom: 1.5vh !important;
+    }
+
+    .menu-hidden .colon {
+        gap: 7.5vh !important;
+        width: 7.5vh !important;
+        height: 34vh !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    /* 秒セグメント（menu-hidden） */
+    .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 19vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-c { top: 19vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-d { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit-sec .seg-e { top: 19vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 19vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
+
+
+    /* ============================
+       通常横向き（メニューあり）
+       ============================ */
     .time-wrapper {
         gap: 2vh !important;
         align-items: flex-end !important;
@@ -420,16 +291,294 @@ input[type="range"] {
         height: 1.6vh !important;
     }
 
-    .digit .seg-a { top: 0; left: 1.2vh; right: 1.2vh; height: 1.6vh; }
-    .digit .seg-b { top: 1.2vh; right: 0; bottom: 11vh; width: 1.6vh; }
-    .digit .seg-c { top: 11vh; right: 0; bottom: 1.2vh; width: 1.6vh; }
-    .digit .seg-d { bottom: 0; left: 1.2vh; right: 1.2vh; height: 1.6vh; }
-    .digit .seg-e { top: 11vh; left: 0; bottom: 1.2vh; width: 1.6vh; }
-    .digit .seg-f { top: 1.2vh; left: 0; bottom: 11vh; width: 1.6vh; }
-    .digit .seg-g { top: 9.2vh; left: 1.2vh; right: 1.2vh; height: 1.6vh; }
+    /* 通常横向きのセグメント配置 */
+    .digit .seg-a { top: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit .seg-b { top: 1.2vh !important; right: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    .digit .seg-c { top: 11vh !important; right: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    .digit .seg-d { bottom: 0 !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
+    .digit .seg-e { top: 11vh !important; left: 0 !important; bottom: 1.2vh !important; width: 1.6vh !important; }
+    .digit .seg-f { top: 1.2vh !important; left: 0 !important; bottom: 11vh !important; width: 1.6vh !important; }
+    .digit .seg-g { top: 9.2vh !important; left: 1.2vh !important; right: 1.2vh !important; height: 1.6vh !important; }
 
-    .digit-sec .seg-a { height: 1.2vh; left: 0.9vh; right: 0.9vh; }
-    .digit-sec .seg-b { top: 0.9vh; right: 0; bottom: 8.2vh; width: 1.2vh; }
-    .digit-sec .seg-c { top: 8.2vh; right: 0; bottom: 0.9vh; width: 1.2vh; }
-    .digit-sec .seg-d { height: 1.2vh; left: 0.9vh; right: 0.9vh; }
+    .digit-sec .seg-a { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    .digit-sec .seg-b { top: 0.9vh !important; right: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    .digit-sec .seg-c { top: 8.2vh !important; right: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    .digit-sec .seg-d { height: 1.2vh !important; left: 0.9vh !important; right: 0.9vh !important; }
+    .digit-sec .seg-e { top: 8.2vh !important; left: 0 !important; bottom: 0.9vh !important; width: 1.2vh !important; }
+    .digit-sec .seg-f { top: 0.9vh !important; left: 0 !important; bottom: 8.2vh !important; width: 1.2vh !important; }
+    .digit-sec .seg-g { top: 6.9vh !important; left: 0.9vh !important; right: 0.9vh !important; height: 1.2vh !important; }
+}
+
+/* ==========================================================================
+   4. タイマー設定・情報パネル
+   ========================================================================== */
+.feature-panel {
+    display: none; /* 初期状態は非表示、JavaScriptでflexに切り替え */
+    flex-direction: column;
+    background-color: var(--panel-bg);
+    border-radius: 12px;
+    padding: 15px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.panel-title {
+    font-size: 0.75rem;
+    color: #8e8e93;
+    font-weight: bold;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.panel-row, .countdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.countdown-row {
+    display: none; /* カウントダウン中のみJSで表示 */
+}
+
+.feature-panel input[type="number"] {
+    width: 60px;
+    background-color: var(--input-bg);
+    border: none;
+    color: var(--text-color);
+    padding: 8px;
+    border-radius: 6px;
+    /* font-size: 1.1rem; */
+    font-size: 16px;
+    text-align: center;
+}
+/* ==========================================================================
+   5. iPhone最適化コントロールメニュー（画面下部）
+   ========================================================================== */
+.controls-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: var(--panel-bg);
+    width: 100%;
+    max-width: 500px;
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* 汎用ボタンスタイル */
+button {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.1s;
+}
+
+button:active {
+    opacity: 0.7;
+}
+
+/* 選択中（アクティブ）のボタン */
+button.active {
+    background-color: #007aff;
+    color: #ffffff;
+}
+
+/* ボタンのグループ化 (12H/24H用) */
+.btn-group {
+    display: flex;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.btn-group button {
+    background-color: transparent;
+    padding: 8px 14px;
+    border-radius: 6px;
+}
+
+.btn-group button.active {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ドロップダウン、インプットのラッパー設定 */
+.dropdown-wrapper, .color-picker-wrapper, .brightness-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--input-bg);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.dropdown-label {
+    font-weight: 600;
+}
+
+select {
+    background-color: transparent;
+    color: var(--text-color);
+    border: none;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+}
+
+/* カラーピッカーの装飾 */
+input[type="color"] {
+    -webkit-appearance: none;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+}
+
+/* 明るさスライダーの装飾 */
+input[type="range"] {
+    width: 70px;
+    cursor: pointer;
+}
+
+/* ユーティリティクラス */
+.flex-wrap { flex-wrap: wrap; }
+.justify-center { justify-content: center; }
+.gap-2 { gap: 8px; }
+
+
+/* ==========================================================================
+   6. メニュー非表示（全画面表示モード）時の自動拡大設定
+   ========================================================================== */
+/* 📱 縦向き時にメニューが消えたら、数字を1.2倍大きくする */
+.menu-hidden .digit {
+    width: 9vw !important;
+    height: 18vw !important;
+}
+.menu-hidden .digit-sec {
+    width: 6.7vw !important;
+    height: 13.4vw !important;
+    margin-bottom: 0.7vw !important;
+}
+.menu-hidden .colon {
+    gap: 2.4vw !important;
+    width: 3vw !important;
+    height: 18vw !important; /* 縦画面全画面時の数字の高さに完全同期 */
+}
+.menu-hidden .colon-dot {
+    width: 1.2vw !important;
+    height: 1.2vw !important;
+}
+
+/* 🚀 全画面モード用のセグメント位置・サイズ再計算（1.2倍の比率に完全同期） */
+/* A（上・横棒） */
+.menu-hidden .digit .seg-a { top: 0 !important; left: 0.9vw !important; right: 0.9vw !important; height: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-a { height: 0.9vw !important; left: 0.72vw !important; right: 0.72vw !important; }
+
+/* B（右上・縦棒） */
+.menu-hidden .digit .seg-b { top: 0.9vw !important; right: 0 !important; bottom: 9.36vw !important; width: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-b { top: 0.72vw !important; right: 0 !important; bottom: 6.96vw !important; width: 0.9vw !important; }
+
+/* C（右下・縦棒） */
+.menu-hidden .digit .seg-c { top: 9.36vw !important; right: 0 !important; bottom: 0.9vw !important; width: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-c { top: 6.96vw !important; right: 0 !important; bottom: 0.72vw !important; width: 0.9vw !important; }
+
+/* D（下・横棒） */
+.menu-hidden .digit .seg-d { bottom: 0 !important; left: 0.9vw !important; right: 0.9vw !important; height: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-d { height: 0.9vw !important; left: 0.72vw !important; right: 0.72vw !important; }
+
+/* E（左下・縦棒） */
+.menu-hidden .digit .seg-e { top: 9.36vw !important; left: 0 !important; bottom: 0.9vw !important; width: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-e { top: 6.96vw !important; left: 0 !important; bottom: 0.72vw !important; width: 0.9vw !important; }
+
+/* F（左上・縦棒） */
+.menu-hidden .digit .seg-f { top: 0.9vw !important; left: 0 !important; bottom: 9.36vw !important; width: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-f { top: 0.72vw !important; left: 0 !important; bottom: 6.96vw !important; width: 0.9vw !important; }
+
+/* G（中央・横棒） */
+.menu-hidden .digit .seg-g { top: 8.4vw !important; left: 0.9vw !important; right: 0.9vw !important; height: 1.2vw !important; }
+.menu-hidden .digit-sec .seg-g { top: 6.24vw !important; left: 0.72vw !important; right: 0.72vw !important; height: 0.9vw !important; }
+
+
+/* 🔄 📱 横向き時にメニューが消えたら、上下いっぱいに限界まで巨大化させる */
+@media (orientation: landscape) {
+    .menu-hidden .time-wrapper {
+        gap: 3vh !important;
+    }
+    .menu-hidden .digit {
+        width: 16vh !important;
+        height: 30vh !important;
+    }
+    .menu-hidden .digit-sec {
+        width: 12vh !important;
+        height: 22.5vh !important;
+        margin-bottom: 1.2vh !important;
+    }
+    .menu-hidden .colon {
+        gap: 6vh !important;
+        width: 6vh !important;
+        height: 30vh !important; /* 横画面全画面時の数字の高さに完全同期 */
+    }
+    .menu-hidden .colon-dot {
+        width: 2.4vh !important;
+        height: 2.4vh !important;
+    }
+    
+    /* 横向き全画面時のセグメント配置バランスの調整 */
+    .menu-hidden .digit .seg-a { left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-a { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit .seg-b { top: 1.8vh !important; bottom: 16.5vh !important; width: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-b { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit .seg-c { top: 16.5vh !important; bottom: 1.8vh !important; width: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-c { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit .seg-d { left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-d { height: 1.8vh !important; left: 1.3vh !important; right: 1.3vh !important; }
+    .menu-hidden .digit .seg-e { top: 16.5vh !important; bottom: 1.8vh !important; width: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-e { top: 12.3vh !important; bottom: 1.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit .seg-f { top: 1.8vh !important; bottom: 16.5vh !important; width: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-f { top: 1.3vh !important; bottom: 12.3vh !important; width: 1.8vh !important; }
+    .menu-hidden .digit .seg-g { top: 13.8vh !important; left: 1.8vh !important; right: 1.8vh !important; height: 2.4vh !important; }
+    .menu-hidden .digit-sec .seg-g { top: 10.3vh !important; left: 1.3vh !important; right: 1.3vh !important; height: 1.8vh !important; }
+}
+
+/* --- 🔄 📱 【縦向き限定】スマホ横向き時対応 --- */
+@media (orientation: portrait) {
+    .colon {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        height: 15vh !important;   /* ← 100% を解除して自然な高さに */
+        margin: 0 1vw !important;  /* 必要なら左右の余白を調整 */
+    }
+    .time-wrapper {
+        align-items: center !important; /* ← これを追加 */
+    }
 }
