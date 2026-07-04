@@ -93,8 +93,11 @@ function triggerAlarm() {
 // --- 7セグメント描画 ---
 function drawDigit(element, num) {
     if (!element) return;
-    const segs = element.querySelectorAll('.seg');
+
     const pattern = getPattern(num);
+    if (!pattern) return;   // ★ 追加：NaN や undefined を防ぐ
+
+    const segs = element.querySelectorAll('.seg');
     segs.forEach((seg, index) => {
         if (pattern[index] === 1) seg.classList.add('on');
         else seg.classList.remove('on');
@@ -105,6 +108,8 @@ function drawDigit(element, num) {
 function updateDisplay() {
     let hoursStr, minutesStr, secondsStr;
     const periodEl = document.getElementById('period-display');
+    
+    if (!document.getElementById('h1')) return; // ★ DOM未構築時の保護
 
     if (isTimerActive) {
         if (periodEl) periodEl.style.display = 'none'; 
