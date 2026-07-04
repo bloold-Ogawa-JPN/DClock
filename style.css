@@ -431,4 +431,5 @@ input[type="range"] {
     .digit-sec .seg-a { height: 1.2vh; left: 0.9vh; right: 0.9vh; }
     .digit-sec .seg-b { top: 0.9vh; right: 0; bottom: 8.2vh; width: 1.2vh; }
     .digit-sec .seg-c { top: 8.2vh; right: 0; bottom: 0.9vh; width: 1.2vh; }
-    .digit-sec .seg-d { height: 1.2vh; left: 0.9
+    .digit-sec .seg-d { height: 1.2vh; left: 0.9vh; right: 0.9vh; }
+}
