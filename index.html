@@ -23,6 +23,11 @@
     <script type="application/json" id="client-env">
         {"locale":"en","featureFlags":[]}
     </script>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#000000">
+
 </head>
 
 <body>
@@ -160,5 +165,12 @@
     <!-- 外部JavaScript -->
     <script src="script.js"></script>
 
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("service-worker.js");
+            }); 
+        }
+    </script>
 </body>
 </html>
