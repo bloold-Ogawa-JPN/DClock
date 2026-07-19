@@ -2,39 +2,40 @@
 <html lang="ja" data-color-mode="dark" data-light-theme="light" data-dark-theme="dark">
 <head>
     <meta charset="utf-8">
+
     <!-- iPhoneアプリ化のためのアイコン設定 -->
     <link rel="apple-touch-icon" href="icon.png">
+
     <!-- iPhoneアプリ化のための必須設定 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,
+                   user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="液晶時計">
-    <title>液晶デジタル時計</title>
-    
-    <!-- GitHub 外部スタイルシート（Primer UI） -->
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
-    <link crossorigin="anonymous" media="all" rel="stylesheet" href="https://githubassets.com" />
 
-    <!-- 外部CSSの読み込み -->
+    <title>液晶デジタル時計</title>
+
+    <!-- 外部CSS -->
     <link rel="stylesheet" href="style.css">
 
     <!-- 環境変数JSON -->
-    <script type="application/json" id="client-env">{"locale":"en","featureFlags":[]}</script>
+    <script type="application/json" id="client-env">
+        {"locale":"en","featureFlags":[]}
+    </script>
 </head>
+
 <body>
 
     <!-- 時計表示エリア -->
     <div class="clock-container" onclick="toggleFullscreen()">
+
         <!-- カレンダー表示 -->
         <div class="date-display" id="date-el">----年--月--日 (ー)</div>
-        
+
         <!-- 7セグメントディスプレイ -->
         <div class="time-wrapper">
+
             <!-- AM/PM 液晶 -->
             <div class="period-display" id="period-display">AM</div>
 
@@ -87,16 +88,22 @@
             </div>
         </div>
 
+        <!-- WakeLock / フルスクリーン案内 -->
+        <div id="fullscreen-guide" class="guide-text">
+            画面をタップして全画面・常時ON表示
+        </div>
     </div>
 
     <!-- タイマー設定・情報パネル -->
     <div class="feature-panel" id="timer-panel">
         <p class="panel-title">TIMER CONTROL</p>
-        
+
         <div class="panel-row" id="timer-setup">
-            <input type="number" id="timer-hours" min="0" max="23" value="0" placeholder="時" inputmode="numeric" pattern="[0-9]*"><span>:</span>
-            <input type="number" id="timer-minutes" min="0" max="59" value="3" placeholder="分" inputmode="numeric" pattern="[0-9]*"><span>:</span>
-            <input type="number" id="timer-seconds" min="0" max="59" value="0" placeholder="秒" inputmode="numeric" pattern="[0-9]*">
+            <input type="number" id="timer-hours" min="0" max="23" value="0">
+            <span>:</span>
+            <input type="number" id="timer-minutes" min="0" max="59" value="3">
+            <span>:</span>
+            <input type="number" id="timer-seconds" min="0" max="59" value="0">
             <button class="action-btn" onclick="startTimer()">Start</button>
         </div>
 
@@ -108,13 +115,14 @@
 
     <!-- iPhone最適化ボトムコントロールメニュー -->
     <div class="controls-container">
+
         <!-- 上段 -->
         <div class="controls-row flex-wrap justify-center gap-2">
             <div class="btn-group">
                 <button id="btn-12h" onclick="changeFormat('12h')">12H</button>
                 <button id="btn-24h" class="active" onclick="changeFormat('24h')">24H</button>
             </div>
-            
+
             <div class="dropdown-wrapper">
                 <input type="checkbox" id="chime-toggle" checked>
                 <label for="chime-toggle" class="dropdown-label">時報</label>
@@ -135,7 +143,7 @@
         <div class="controls-row flex-wrap justify-center gap-2">
             <button id="theme-toggle-btn" onclick="toggleTheme()">Light</button>
             <button id="timer-toggle-btn" onclick="toggleTimerPanel()">Timer</button>
-            
+
             <div class="color-picker-wrapper">
                 <label class="dropdown-label">Color:</label>
                 <input type="color" id="color-picker" value="#ff9500" oninput="changeColor(this.value)">
@@ -143,60 +151,14 @@
 
             <div class="brightness-wrapper">
                 <label class="dropdown-label">Bright:</label>
-                <input type="range" id="brightness" min="0.2" max="1" step="0.1" value="1" oninput="changeBrightness(this.value)">
+                <input type="range" id="brightness" min="0.2" max="1" step="0.1" value="1"
+                       oninput="changeBrightness(this.value)">
             </div>
         </div>
     </div>
 
-    <!-- 外部JavaScriptの読み込み -->
+    <!-- 外部JavaScript -->
     <script src="script.js"></script>
-    <!-- 自動消灯防止（Wake Lock）追加ロジック -->
-    <script>
-        let wakeLock = null;
 
-        // 常時ONを有効化する関数
-        async function activateWakeLock() {
-            if ('wakeLock' in navigator) {
-                try {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('画面常時ONが有効になりました');
-                } catch (err) {
-                    console.error(`Wake Lockエラー: ${err.message}`);
-                }
-            }
-        }
-
-        // 常時ONを解除する関数
-        function deactivateWakeLock() {
-            if (wakeLock !== null) {
-                wakeLock.release();
-                wakeLock = null;
-                console.log('画面常時ONが解除されました');
-            }
-        }
-
-        // 既存の toggleFullscreen と連動する新しい関数
-        async function toggleFullscreenWithWakeLock() {
-            // 1. 既存のscript.jsにある全画面切り替え関数を実行
-            if (typeof toggleFullscreen === 'function') {
-                toggleFullscreen();
-            }
-
-            // 2. フルスクリーン状態に応じて常時ONを切り替え
-            // iOS等で完全なDocumentフルスクリーンに対応していない場合を考慮し、
-            // タップされるたびに有効化（すでに有効ならスキップ）する安全設計にしています
-            if (wakeLock === null) {
-                await activateWakeLock();
-            } else {
-                deactivateWakeLock();
-            }
-        }
-        // アプリがバックグラウンドに引っ込んで戻ってきたときに自動再取得する処理
-        document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                await activateWakeLock();
-            }
-        });
-    </script>
 </body>
 </html>
