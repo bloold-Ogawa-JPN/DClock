@@ -89,8 +89,6 @@ async function triggerChime(currentSecond) {
     }
 }
 
-
-
 // アラーム音（タイマー終了時）
 function triggerAlarm() {
     initAudio(); // ★これを追加（最重要）
@@ -384,10 +382,8 @@ async function toggleFullscreen() {
     initAudio(); 
 /*    requestWakeLock(); */
     activateWakeLock(); // ← requestWakeLock() ではなく activateWakeLock()
-        // ★ 初回タップで音声権限を解禁
-    if (!window.userAudioActivated) {
-        await userActivated();
-    }
+/* タップで音声権限を解禁 */
+    await userActivated();
     // ボトムメニューの表示切り替え
     const controls = document.querySelector('.controls-container');
     if (controls) {
