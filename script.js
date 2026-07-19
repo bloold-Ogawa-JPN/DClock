@@ -377,27 +377,39 @@ function changeBrightness(brightnessValue) {
     localStorage.setItem('clockBrightness', brightnessValue);
 }
 
-// 画面をタップした際の挙動（メニュー非表示に合わせて文字を巨大化）
 async function toggleFullscreen() {
-    initAudio(); 
-/*    requestWakeLock(); */
-    activateWakeLock(); // ← requestWakeLock() ではなく activateWakeLock()
-/* タップで音声権限を解禁 */
+    initAudio();
+
+    // ★ 毎回音声権限を再解禁（Safari対策）
     await userActivated();
-    // ボトムメニューの表示切り替え
+
     const controls = document.querySelector('.controls-container');
-    if (controls) {
-        if (controls.style.display === 'none') {
-            controls.style.display = 'flex';
-            // メニューが表示されたので、拡大モードのクラスを外す
-            document.body.classList.remove('menu-hidden');
-        } else {
-            controls.style.display = 'none';
-            // メニューが消えたので、拡大モードのクラスを付与する
-            document.body.classList.add('menu-hidden');
+    const isHidden = controls && controls.style.display === 'none';
+
+    if (isHidden) {
+        // メニューを表示する
+        controls.style.display = 'flex';
+        document.body.classList.remove('menu-hidden');
+
+        // ★ メニュー表示時は WakeLock を解除
+        if (wakeLock) {
+            wakeLock.release();
+            wakeLock = null;
         }
+
+    } else {
+        // メニューを非表示にする（全画面）
+        controls.style.display = 'none';
+        document.body.classList.add('menu-hidden');
+
+        // ★ 全画面時は WakeLock を再取得
+        await activateWakeLock();
     }
+
+    // Safari のレイアウト再計算対策
+    setTimeout(updateDisplay, 50);
 }
+
 async function userActivated() {
     await playTone(1000, 'sine', 0.05); // ★Safariが確実に音声解禁する
     window.userAudioActivated = true;
