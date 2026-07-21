@@ -490,3 +490,9 @@ window.addEventListener('DOMContentLoaded', () => {
     updateDisplay();
     setInterval(updateDisplay, 1000);
 });
+// PWA 起動時のフェードイン
+window.addEventListener("DOMContentLoaded", () => {
+    requestAnimationFrame(() => {
+        document.body.classList.add("loaded");
+    });
+});
