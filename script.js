@@ -11,7 +11,25 @@ const patternStrings = {
     8: "1,1,1,1,1,1,1",
     9: "1,1,1,1,0,1,1"
 };
+// --- iOS Safari：ロック解除後の AudioContext 復帰 ---
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+});
 
+window.addEventListener('focus', () => {
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+});
+
+// --- ロック解除後の最初のタップで確実に音声権限を復帰 ---
+window.addEventListener('click', () => {
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}, { once: true });
 function getPattern(num) {
     const str = patternStrings[num];
     if (!str) return;
@@ -496,22 +514,4 @@ window.addEventListener("DOMContentLoaded", () => {
         document.body.classList.add("loaded");
     });
 });
-// --- iOS Safari：ロック解除後の AudioContext 復帰 ---
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-});
 
-window.addEventListener('focus', () => {
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-});
-
-// --- ロック解除後の最初のタップで確実に音声権限を復帰 ---
-window.addEventListener('click', () => {
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-}, { once: true });
