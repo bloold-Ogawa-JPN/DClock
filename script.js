@@ -11,25 +11,7 @@ const patternStrings = {
     8: "1,1,1,1,1,1,1",
     9: "1,1,1,1,0,1,1"
 };
-// --- iOS Safari：ロック解除後の AudioContext 復帰 ---
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-});
 
-window.addEventListener('focus', () => {
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-});
-
-// --- ロック解除後の最初のタップで確実に音声権限を復帰 ---
-window.addEventListener('click', () => {
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-}, { once: true });
 function getPattern(num) {
     const str = patternStrings[num];
     if (!str) return;
@@ -40,48 +22,52 @@ function getPattern(num) {
 let timerInterval = null;
 let remainingSeconds = 0;
 let isTimerActive = false;
-let timeFormat = '24h'; 
-let lastHour = -1;      
-let wakeLock = null; 
+let timeFormat = '24h';
+let lastHour = -1;
+let wakeLock = null;
 
 // --- iOS対応 Web Audio API シンセサイザー音源 ---
 let audioCtx = null;
 
 function initAudio() {
-    if (!audioCtx) {
+    if (!audioCtx || audioCtx.state === 'closed') {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
     }
 }
 
 async function playTone(freq, type, duration) {
     initAudio();
-    await audioCtx.resume(); 
     if (!audioCtx) return;
+
+    try {
+        if (audioCtx.state === 'suspended') {
+            await audioCtx.resume();
+        }
+    } catch (e) {
+        // iOS15系などで resume が失敗しても落ちないようにする
+        console.warn('AudioContext resume failed:', e);
+    }
 
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
-    
+
     osc.type = type;
     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    
+
     gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(
         0.00001,
         audioCtx.currentTime + duration
     );
-    
+
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
-    
+
     osc.start();
     osc.stop(audioCtx.currentTime + duration);
 }
 
 // 時報音（引数で現在の秒数を受け取り、リアルタイムに音を出し分け）
-// --- 時報サービス風（ポン、ポン、ポ〜ン！） ---
 async function triggerChime(currentSecond) {
     const chimeSelect = document.getElementById('chime-sound-select').value;
     initAudio();
@@ -109,7 +95,7 @@ async function triggerChime(currentSecond) {
 
 // アラーム音（タイマー終了時）
 function triggerAlarm() {
-    initAudio(); // ★これを追加（最重要）
+    initAudio();
     let count = 0;
     const alarmLoop = setInterval(() => {
         playTone(2500, 'square', 0.1);
@@ -119,15 +105,57 @@ function triggerAlarm() {
     }, 600);
 }
 
-// 7セグメント液晶の描画ロジック
+// --- iOS Safari：ロック解除後の AudioContext 復帰（iOS16+向け補強） ---
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+    }
+});
+
+window.addEventListener('focus', () => {
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+    }
+});
+
+// --- ロック解除後の最初のタップで AudioContext を再生成（iOS15系向け保険） ---
+window.addEventListener('touchstart', () => {
+    if (!audioCtx || audioCtx.state === 'suspended' || audioCtx.state === 'closed') {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}, { once: true });
+
+window.addEventListener('click', () => {
+    if (!audioCtx || audioCtx.state === 'suspended' || audioCtx.state === 'closed') {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}, { once: true });
+
+// --- 7セグメント液晶の描画ロジック（DOM参照をキャッシュ） ---
+const digitEls = {};
+const colonDots = () => document.querySelectorAll('.colon-dot');
+
+function cacheDigits() {
+    digitEls.h1 = document.getElementById('h1');
+    digitEls.h2 = document.getElementById('h2');
+    digitEls.m1 = document.getElementById('m1');
+    digitEls.m2 = document.getElementById('m2');
+    digitEls.s1 = document.getElementById('s1');
+    digitEls.s2 = document.getElementById('s2');
+}
+
 function drawDigit(element, num) {
     if (!element) return;
     const segs = element.querySelectorAll('.seg');
     const pattern = getPattern(num);
+    if (!pattern) return;
+
     segs.forEach((seg, index) => {
-        if (pattern[index] === 1) {
+        const shouldOn = pattern[index] === 1;
+        const isOn = seg.classList.contains('on');
+        if (shouldOn && !isOn) {
             seg.classList.add('on');
-        } else {
+        } else if (!shouldOn && isOn) {
             seg.classList.remove('on');
         }
     });
@@ -139,7 +167,7 @@ function updateDisplay() {
     const periodEl = document.getElementById('period-display');
 
     if (isTimerActive) {
-        if (periodEl) periodEl.style.display = 'none'; 
+        if (periodEl) periodEl.style.display = 'none';
         if (remainingSeconds <= 0) {
             hoursStr = "00";
             minutesStr = "00";
@@ -159,7 +187,7 @@ function updateDisplay() {
         const date = now.getDate();
         const dayList = ['日', '月', '火', '水', '木', '金', '土'];
         const dayOfWeek = dayList[now.getDay()];
-        
+
         const dateEl = document.getElementById('date-el');
         if (dateEl) {
             dateEl.textContent = `${year}年${month}月${date}日 (${dayOfWeek})`;
@@ -169,26 +197,21 @@ function updateDisplay() {
         const rawMinute = now.getMinutes();
         const rawSecond = now.getSeconds();
 
-        // 1. 条件判定（59分57〜59秒、または0分0秒）
-        const isChimeTime = (rawMinute === 59 && [57, 58, 59].includes(rawSecond)) || (rawMinute === 0 && rawSecond === 0);
+        const isChimeTime =
+            (rawMinute === 59 && [57, 58, 59].includes(rawSecond)) ||
+            (rawMinute === 0 && rawSecond === 0);
 
         if (isChimeTime) {
             const chimeToggle = document.getElementById('chime-toggle');
-    
-        // 2. トグルスイッチのチェック
             if (chimeToggle && chimeToggle.checked) {
-        
-        // 3. 同じ秒数で2回以上鳴るのを防ぐ（一意なキーとして分+秒を使用するとより安全）
-                const timeKey = `${rawMinute}:${rawSecond}`;
-        
-                if (typeof this.lastChimeKey === 'undefined' || this.lastChimeKey !== timeKey) {
+                const timeKey = `${rawMinute}-${rawSecond}-${now.getMilliseconds()}`;
+                if (typeof window.lastChimeKey === 'undefined' || window.lastChimeKey !== timeKey) {
                     triggerChime(rawSecond);
-                    this.lastChimeKey = timeKey; // 鳴らしたタイミングを記録
+                    window.lastChimeKey = timeKey;
                 }
-            } 
+            }
         }
 
-        // 12時間表記 / 24時間表記の出し分け
         if (timeFormat === '12h' && periodEl) {
             periodEl.style.display = 'block';
             if (rawHour >= 12) {
@@ -207,22 +230,20 @@ function updateDisplay() {
         secondsStr = String(rawSecond).padStart(2, '0');
     }
 
-    // 各桁へデータを分配して液晶点灯
-    drawDigit(document.getElementById('h1'), parseInt(hoursStr.charAt(0)));
-    drawDigit(document.getElementById('h2'), parseInt(hoursStr.charAt(1)));
-    drawDigit(document.getElementById('m1'), parseInt(minutesStr.charAt(0)));
-    drawDigit(document.getElementById('m2'), parseInt(minutesStr.charAt(1)));
-    drawDigit(document.getElementById('s1'), parseInt(secondsStr.charAt(0)));
-    drawDigit(document.getElementById('s2'), parseInt(secondsStr.charAt(1)));
+    drawDigit(digitEls.h1, parseInt(hoursStr.charAt(0)));
+    drawDigit(digitEls.h2, parseInt(hoursStr.charAt(1)));
+    drawDigit(digitEls.m1, parseInt(minutesStr.charAt(0)));
+    drawDigit(digitEls.m2, parseInt(minutesStr.charAt(1)));
+    drawDigit(digitEls.s1, parseInt(secondsStr.charAt(0)));
+    drawDigit(digitEls.s2, parseInt(secondsStr.charAt(1)));
 
-    // コロンの点滅同期
     const blinkTarget = isTimerActive ? remainingSeconds : parseInt(secondsStr);
     const isEven = blinkTarget % 2 === 0;
-    const colons = document.querySelectorAll('.colon-dot');
-    colons.forEach(dot => {
-        if (isEven) {
+    colonDots().forEach(dot => {
+        const on = dot.classList.contains('on');
+        if (isEven && !on) {
             dot.classList.add('on');
-        } else {
+        } else if (!isEven && on) {
             dot.classList.remove('on');
         }
     });
@@ -244,19 +265,21 @@ async function requestWakeLock() {
 async function activateWakeLock() {
     try {
         wakeLock = await navigator.wakeLock.request('screen');
-
-        // ★ ここで初めて wakeLock にイベントを付けられる
         wakeLock.addEventListener('release', () => {
             console.log('Wake Lock が解除されました。再取得します。');
             activateWakeLock();
         });
-
         console.log('Wake Lock 有効化');
     } catch (err) {
         console.error('Wake Lock エラー:', err);
     }
 }
 
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        activateWakeLock().catch(() => {});
+    }
+});
 
 /* --- タイマー制御パネル --- */
 function toggleTimerPanel() {
@@ -271,19 +294,18 @@ function toggleTimerPanel() {
         panel.style.display = 'flex';
         btn.classList.add('active');
 
-        // ★ パネルを開いた直後にカーソル位置を右端へ移動
         setTimeout(() => {
             document.querySelectorAll('#timer-panel input[type="number"]').forEach(input => {
                 const val = input.value;
-                input.value = '';   // 一度空にする
-                input.value = val;  // 値を戻す → カーソルが末尾へ移動
+                input.value = '';
+                input.value = val;
             });
-        }, 50); // iPhone Safari は少し遅延させると安定
+        }, 50);
     }
 }
 
 function startTimer() {
-    initAudio(); 
+    initAudio();
 
     const hInput = parseInt(document.getElementById('timer-hours').value) || 0;
     const mInput = parseInt(document.getElementById('timer-minutes').value) || 0;
@@ -324,14 +346,14 @@ function stopTimer() {
     document.getElementById('countdown-display').style.display = 'none';
     updateDisplay();
 }
+
 /* --- 設定変更 ＆ localStorage保存ロジック --- */
 
 // 時間表記切り替え (12H / 24H)
 function changeFormat(format) {
     timeFormat = format;
     localStorage.setItem('clockFormat', format);
-    
-    // ボタンのハイライト切り替え
+
     const btn12 = document.getElementById('btn-12h');
     const btn24 = document.getElementById('btn-24h');
     if (btn12 && btn24) {
@@ -366,20 +388,17 @@ function toggleTheme() {
 
 // 文字色（カラーピッカー）変更
 function changeColor(colorValue) {
-    // CSS変数を書き換え（液晶セグメントやコロンの色を制御）
     document.documentElement.style.setProperty('--neon-color', colorValue);
-    
-    // AMPM・日付の文字色も明示的に適用
+
     const periodEl = document.getElementById('period-display');
     if (periodEl) periodEl.style.color = colorValue;
 
     const dateEl = document.getElementById('date-el');
     if (dateEl) dateEl.style.color = colorValue;
-    
-    // カラーピッカー自体の表示位置も同期
+
     const picker = document.getElementById('color-picker');
     if (picker) picker.value = colorValue;
-    
+
     localStorage.setItem('clockColor', colorValue);
 }
 
@@ -398,55 +417,47 @@ function changeBrightness(brightnessValue) {
 async function toggleFullscreen() {
     initAudio();
 
-    // ★ 毎回音声権限を再解禁（Safari対策）
     await userActivated();
 
     const controls = document.querySelector('.controls-container');
     const isHidden = controls && controls.style.display === 'none';
 
     if (isHidden) {
-        // メニューを表示する
         controls.style.display = 'flex';
         document.body.classList.remove('menu-hidden');
 
-        // ★ メニュー表示時は WakeLock を解除
         if (wakeLock) {
             wakeLock.release();
             wakeLock = null;
         }
-
     } else {
-        // メニューを非表示にする（全画面）
         controls.style.display = 'none';
         document.body.classList.add('menu-hidden');
 
-        // ★ 全画面時は WakeLock を再取得
         await activateWakeLock();
     }
 
-    // Safari のレイアウト再計算対策
     setTimeout(updateDisplay, 50);
 }
 
 async function userActivated() {
-    await playTone(1000, 'sine', 0.05); // ★Safariが確実に音声解禁する
+    await playTone(1000, 'sine', 0.05);
     window.userAudioActivated = true;
 }
 
 /* --- 次回起動時の自動読み込み（初期化） --- */
 window.addEventListener('DOMContentLoaded', () => {
-   function updateVh() {
-       document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-   }
-   updateVh();
-   window.addEventListener('resize', updateVh);
+    function updateVh() {
+        document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
+    updateVh();
+    window.addEventListener('resize', updateVh);
 
-    
-    // 1. 時間表示形式 (12h / 24h)
+    cacheDigits();
+
     const savedFormat = localStorage.getItem('clockFormat') || '24h';
     changeFormat(savedFormat);
 
-    // 2. 時報トグルボタン・サウンドセレクトの復元
     const savedChimeToggle = localStorage.getItem('chimeToggle');
     const chimeToggleEl = document.getElementById('chime-toggle');
     if (savedChimeToggle !== null && chimeToggleEl) {
@@ -456,14 +467,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const chimeSoundEl = document.getElementById('chime-sound-select');
     if (chimeSoundEl) chimeSoundEl.value = savedChimeSound;
 
-    // 3. タイマー音トグルボタンの復元
     const savedAlarmToggle = localStorage.getItem('alarmToggle');
     const alarmToggleEl = document.getElementById('alarm-toggle');
     if (savedAlarmToggle !== null && alarmToggleEl) {
         alarmToggleEl.checked = savedAlarmToggle === 'true';
     }
 
-    // 4. テーマの復元
     const savedTheme = localStorage.getItem('clockTheme') || 'dark';
     const html = document.documentElement;
     const themeBtn = document.getElementById('theme-toggle-btn');
@@ -472,15 +481,12 @@ window.addEventListener('DOMContentLoaded', () => {
         themeBtn.textContent = savedTheme === 'light' ? 'Dark' : 'Light';
     }
 
-    // 5. 文字色の復元
     const savedColor = localStorage.getItem('clockColor') || '#ff9500';
     changeColor(savedColor);
 
-    // 6. 明るさの復元
     const savedBrightness = localStorage.getItem('clockBrightness') || '1';
     changeBrightness(savedBrightness);
 
-    // 変更を監視して即時保存するイベントリスナー
     if (chimeToggleEl) {
         chimeToggleEl.addEventListener('change', (e) => {
             localStorage.setItem('chimeToggle', e.target.checked);
@@ -496,22 +502,22 @@ window.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('alarmToggle', e.target.checked);
         });
     }
-    // --- iPhone Safari 対策：入力欄タップ時にカーソルを右端へ移動 ---
+
     document.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('focus', function() {
+        input.addEventListener('focus', function () {
             const val = this.value;
-            this.value = '';   // 一度空にする
-            this.value = val;  // 値を戻す → カーソルが末尾へ移動
+            this.value = '';
+            this.value = val;
         });
     });
-    // 時計の1秒定期更新スタート
+
     updateDisplay();
     setInterval(updateDisplay, 1000);
 });
+
 // PWA 起動時のフェードイン
 window.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(() => {
         document.body.classList.add("loaded");
     });
 });
-
