@@ -1,3 +1,22 @@
+// --- iOS15 専用：HTML audio fallback ---
+const isIOS15 = (() => {
+    const ua = navigator.userAgent;
+    return /iPhone/.test(ua) && /OS 15_/.test(ua);
+})();
+
+function playHtmlAudio(type) {
+    let el = null;
+
+    if (type === 'chime1') el = document.getElementById('audio-beep1');
+    if (type === 'chime2') el = document.getElementById('audio-beep2');
+    if (type === 'chime3') el = document.getElementById('audio-beep3');
+
+    if (el) {
+        el.currentTime = 0;
+        el.play().catch(() => {});
+    }
+}
+
 // --- 点灯パターンのテキストデータ（iOS環境での配列カットバグ対策） ---
 const patternStrings = {
     0: "1,1,1,1,1,1,0",
@@ -70,6 +89,17 @@ async function playTone(freq, type, duration) {
 // 時報音（引数で現在の秒数を受け取り、リアルタイムに音を出し分け）
 async function triggerChime(currentSecond) {
     const chimeSelect = document.getElementById('chime-sound-select').value;
+
+// --- iOS15 専用：HTML audio fallback ---
+    if (isIOS15) {
+        if (currentSecond === 57 || currentSecond === 58 || currentSecond === 59) {
+            playHtmlAudio('chime1');
+        } else if (currentSecond === 0) {
+            playHtmlAudio('chime2');
+        }
+        return;
+    }
+
     initAudio();
 
     if (chimeSelect === 'electronic') {
@@ -95,6 +125,18 @@ async function triggerChime(currentSecond) {
 
 // アラーム音（タイマー終了時）
 function triggerAlarm() {
+    // --- iOS15 専用：HTML audio fallback ---
+    if (isIOS15) {
+        let count = 0;
+        const alarmLoop = setInterval(() => {
+            playHtmlAudio('chime3');
+            count++;
+            if (count >= 5) clearInterval(alarmLoop);
+        }, 600);
+        return;
+    }
+
+    // --- iOS16以降：従来の WebAudio ---
     initAudio();
     let count = 0;
     const alarmLoop = setInterval(() => {
@@ -104,6 +146,7 @@ function triggerAlarm() {
         if (count >= 5) clearInterval(alarmLoop);
     }, 600);
 }
+
 
 // --- iOS Safari：ロック解除後の AudioContext 復帰（iOS16+向け補強） ---
 document.addEventListener('visibilitychange', () => {
